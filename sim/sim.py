@@ -1,4 +1,5 @@
 import datetime
+import pyautogui
 from vpython import vector, canvas, rate, mag, label
 from orbits_GUI.sim.controls import Controls
 
@@ -8,29 +9,27 @@ class Simulate:
     with given starting positions, starting velocities, and masses. Perturbations in orbits from surrounding massive
     bodies are accounted for in the motion of the spheres.
 
-    Class Attributes:
-        display_width: (int) The VPython canvas width in pixels (default is 1900).
-        display_height: (int) The VPython canvas height in pixels (default is 685).
-
-    Functions:
-        start: Starts the simulation GUI.
+    Methods:
+        start: Starts the simulation program.
     """
 
-    _gravity = _scene = _spheres = _massives = _lamps = _time_stamp = _time = _dt = _frame_rate = _controls = None
-    display_width = 1900
-    display_height = 685
+    _gravity = _scene = _spheres = _massives = _time_stamp = _time = _dt = _frame_rate = _controls = None
+    _screen_width, _screen_height = pyautogui.size()
+    # display_width = 1900
+    # display_height = 685
 
-    def __force_gravity(self, object_one, object_two):
+
+    def __force_gravity(self, sphere_one, sphere_two):
         """ Uses Newton's Law of Universal Gravitation to find the force of gravity on
-        the first object due to the second object.
+        the first sphere due to the second sphere.
 
-        :param object_one: (VPython sphere) VPython sphere for first object.
-        :param object_two: (VPython sphere) VPython sphere for second object.
-        :return: (VPython vector) Force vector due to gravity on object_one from object_two.
+        :param sphere_one: (Sphere) VPython sphere for first sphere.
+        :param sphere_two: (Sphere) VPython sphere for second sphere.
+        :return: (VPython vector) Force vector due to gravity on sphere_one from sphere_two.
         """
 
-        position_vector = object_one.pos - object_two.pos
-        return -self._gravity*object_one.mass*object_two.mass*position_vector/mag(position_vector)**3
+        position_vector = sphere_one.pos - sphere_two.pos
+        return -self._gravity*sphere_one.mass*sphere_two.mass*position_vector/mag(position_vector)**3
 
     def __update_forces(self):
         """ A list of the total gravitational force at one point in time on one sphere due to all
@@ -56,18 +55,20 @@ class Simulate:
             # if self.impulse and i in self._delta_v_indices and time in self._delta_v_times:
             #     self.__apply_impulse(i, time)
             sph.pos += sph.vel*self._dt
-            if sph.emissive:
-                sph.light.pos = sph.pos
             if sph.rotation_speed:
                 sph.rotate(angle=sph.rotation_speed*self._dt, axis=vector(0, 1, 0))
+            if sph.labelled:
+                sph.label.text = sph.label_text()
 
     def __build_scenario(self):
         """ The scenario building phase of the simulation. """
 
+        if self._time_stamp:
+            self._time_stamp.visible = False
+            self._time_stamp = None
+
         while not self._controls.scenario_running:
             self._spheres = self._controls.spheres
-            self._lamps = self._controls.lamps
-            self._system_primary = self._controls.system_primary
             self._dt = self._controls.dt
             self._frame_rate = self._controls.frame_rate
 
@@ -103,9 +104,9 @@ class Simulate:
         return cont
 
     def start(self):
-        """ Starts the simulation GUI. """
+        """ Starts the simulation program. """
 
-        self._scene = canvas(width=self.display_width, height=self.display_height)
+        self._scene = canvas(width=self._screen_width-20, height=self._screen_height-395)
         #self._scene.resizable = False
         self._controls = self.__set_controls()
 

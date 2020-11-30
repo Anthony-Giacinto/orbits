@@ -6,7 +6,7 @@ Classes:
  """
 
 
-from vpython import button, winput, wtext, menu, keysdown, vector, textures, local_light, color, label
+from vpython import button, winput, wtext, menu, keysdown, vector, textures, label
 from orbits_GUI.sim.sphere import Sphere
 from orbits_GUI.astro.params import Sun, Mercury, Venus, Earth, Moon, Mars, Jupiter, Saturn, Uranus, Neptune, gravity
 from orbits_GUI.astro.vectors import Elements
@@ -27,8 +27,9 @@ class Controls:
     scenario_running = False
     system_primary = None
     previous_sphere = None
+    labelled_sphere = None
     loading_message = None
-    spheres, lamps = [], []
+    spheres = []
     dt = 1.0
     frame_rate = 1080
     position, velocity = [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
@@ -52,6 +53,7 @@ class Controls:
     celestials = [Sun, Mercury, Venus, Earth, Moon, Mars, Jupiter, Saturn, Uranus, Neptune]
     celestial_dict = {str(celest()): celest for celest in celestials}
 
+
     def __init__(self, scene):
         """
         :param scene: The desired VPython canvas.
@@ -60,11 +62,12 @@ class Controls:
         self.scene = scene
 
     def pause_button_func(self, b):
-        self.running = not self.running
-        if self.running:
-            b.text = '<b>Pause</b>'
-        else:
-            b.text = '<b>Run</b>'
+        if self.scenario_running:
+            self.running = not self.running
+            if self.running:
+                b.text = '<b>Pause</b>'
+            else:
+                b.text = '<b>Run</b>'
 
     def pause_button(self):
         self.pause = button(text='<b>Pause</b>', pos=self.scene.title_anchor, bind=self.pause_button_func,
@@ -163,15 +166,11 @@ class Controls:
                                                          radius=self.system_primary.radius, shininess=0,
                                                          rotation_speed=self.system_primary.angular_rotation,
                                                          texture=self.system_primary.texture,
-                                                         name=self.system_primary.name)
+                                                         name=str(self.system_primary()))
             self.spheres.append(self.primary)
             if str(m.selected) is 'Sun':
                 self.scene.lights[0].visible = self.scene.lights[1].visible = False
-                self.spheres[0].emissive = True
-
-                light = local_light(pos=self.spheres[0].pos, color=color.white, index=len(self.spheres)-1)
-                self.spheres[0].light = light
-                self.lamps.append(light)
+                self.spheres[0].luminous = True
 
         # if spheres has no system primary body, makes one
         if not self.spheres:
@@ -187,8 +186,7 @@ class Controls:
                 pass
             else:
                 self.primary = None
-                self.spheres[0].visible = False
-                del self.spheres[0]
+                self.spheres[0].delete()
                 self.spheres = []
                 make_system_primary(m)
                 self.scene.camera.follow(self.spheres[0])
@@ -234,13 +232,12 @@ class Controls:
                 except:
                     pass
                 self.scenario_menu.selected = 'Choose Scenario'
-                self.spheres = []
+
                 b.text = '<b>Run Scenario</b>'
 
-                for obj in self.scene.objects:
-                    obj.visible = False
-                    obj.clear_trail()
-                    del obj
+                for sph in self.spheres:
+                    sph.delete()
+                self.spheres = []
 
                 # Deletes everything in the scene caption and creates the scenario menu again
                 # Avoids having an increasing number of spaces after the scenario menu (must also do this for buttons)
@@ -385,7 +382,8 @@ class Controls:
     def name_winput(self):
         self.name_text = wtext(text='Name: ')
         self.scene.append_to_caption(' '*26)
-        self.name_input = winput(bind=self.name_winput_func, text=f'Custom {len(self.spheres)}', type='string')
+        self.name = f'Custom {len(self.spheres)}'
+        self.name_input = winput(bind=self.name_winput_func, text=self.name, type='string')
         self.scene.append_to_caption('\n')
 
     def primary_winput_func(self, w):
@@ -514,26 +512,36 @@ class Controls:
             self.pause_button_func(self.pause)
 
     def mouse_down(self):
-        key = keysdown()
-        sph = self.scene.mouse.pick
+        keys = keysdown()
+        obj = self.scene.mouse.pick
 
-        # deletes the selected shape.
-        if sph is not None and ('delete' in key or 'backspace' in key):
-            sph.clear_trail()
-            sph.visible = False
-            self.spheres.remove(sph)
-            del sph
+        if isinstance(obj, Sphere):
+            if 'delete' in keys or 'backspace' in keys:
+                self.spheres.remove(obj)
+                obj.delete()
+
+            else:
+                if isinstance(self.labelled_sphere, Sphere):
+                    self.labelled_sphere.labelled = False
+                self.labelled_sphere = obj
+                obj.labelled = True
+
+        else:
+            if isinstance(self.labelled_sphere, Sphere):
+                self.labelled_sphere.labelled = False
+            self.labelled_sphere = None
+
 
     def bindings(self):
         self.scene.bind('keyup', self.space_up)
         self.scene.bind('mousedown', self.mouse_down)
 
     def set_controls(self):
+        self.run_scenario_button()
         self.pause_button()
         self.camera_follow_winput()
         self.dt_winput()
         self.frame_rate_winput()
-        self.scene.append_to_title('\t'*25 + ' ')
-        self.run_scenario_button()
+        #self.scene.append_to_title('\t'*25 + ' ')
         self.scenario_menu_dropdown()
         self.bindings()
