@@ -42,14 +42,14 @@ class Elements:
          velocity: (numpy array) The velocity vector of the orbiting body in the Geocentric-Equatorial frame.
 
      Notes:
-        If eccentricity is not 0 and inclination is not 0 or pi give:
+        If eccentricity is not 0 and inclination is not 0 or pi, give:
             longitude_of_ascending_node, the argument of periapsis for the periapsis_angle,
             the true anomaly for the epoch_angle
-        If eccentricity is not 0 and inclination is 0 or pi give:
+        If eccentricity is not 0 and inclination is 0 or pi, give:
             longitude of periapsis for the periapsis_angle, the true anomaly for the epoch_angle
-        If eccentricity is 0 and inclination is not 0 or pi give:
+        If eccentricity is 0 and inclination is not 0 or pi, give:
             longitude_of_ascending_node, the argument of latitude for the epoch_angle
-        If eccentricity is 0 and inclination is 0 or pi give:
+        If eccentricity is 0 and inclination is 0 or pi, give:
             the true longitude for the epoch_angle
      """
 
@@ -79,7 +79,7 @@ class Elements:
 
     def __vector_conditions(self, vector):
         """ Transforms the input vector from the perifocal frame to geocentric equatorial
-        if necessary, and updates _chosen_matrix.
+        if necessary, and updates chosen_matrix.
 
         :param vector: (numpy array) The vector to transform.
         :return: (numpy array) The vector (transformed, if necessary).

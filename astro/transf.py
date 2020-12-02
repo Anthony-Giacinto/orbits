@@ -2,12 +2,12 @@
 Useful matrix transformations.
 
 Functions:
-    peri_geo: (numpy array) A matrix to transform a vector from the Perifocal frame to the Geocentric-Equatorial frame
-    when eccentricity is not 0 and inclination is not 0 or pi.
-    peri_geo_e: (numpy array) A matrix to transform a vector from the Perifocal frame to the Geocentric-Equatorial frame
-    when eccentricity is 0, but inclination is not 0 or pi.
-    peri_geo_i: (numpy array) A matrix to transform a vector from the Perifocal frame to the Geocentric-Equatorial frame
-    when inclination is 0 or pi, but eccentricity is not 0.
+    peri_to_geo: (numpy array) A matrix to transform a vector from the Perifocal frame to the
+    Geocentric-Equatorial frame when eccentricity is not 0 and inclination is not 0 or pi.
+    peri_to_geo_e: (numpy array) A matrix to transform a vector from the Perifocal frame to the
+    Geocentric-Equatorial frame when eccentricity is 0, but inclination is not 0 or pi.
+    peri_to_geo_i: (numpy array) A matrix to transform a vector from the Perifocal frame to the
+    Geocentric-Equatorial frame inclination is 0 or pi, but eccentricity is not 0.
     rotate_x: (numpy array) Basic rotation matrix about the x-axis.
     rotate_y: (numpy array) Basic rotation matrix about the y-axis.
     rotate_z: (numpy array) Basic rotation matrix about the z-axis.
@@ -123,12 +123,12 @@ def rodrigues_rotation(vector, angle):
     """ A matrix that rotates about some given vector by some given angle.
 
     :param vector: (numpy array) The vector to be rotated about.
-    :param angle: (float) The angle of rotation about the given vector.
+    :param angle: (float) The angle of rotation about the given vector in radians.
     :return: (numpy array) The transformation matrix.
     """
 
     w = np.array([[0, -vector[2], vector[1]], [vector[2], 0, -vector[0]], [-vector[1], vector[0], 0]])
-    return np.identity(3) + math.sin(angle)*w + (2*(math.sin(angle/2))**2)*(w.dot(w))
+    return np.identity(3) + math.sin(angle)*w + (1 - math.cos(angle))*(w.dot(w))
 
 
 def geo_to_topo(latitude, local_sidereal_time):
