@@ -6,6 +6,7 @@ Classes:
  """
 
 
+import datetime
 from vpython import button, winput, wtext, menu, keysdown, vector, textures, label
 from orbits_GUI.sim.sphere import Sphere
 from orbits_GUI.astro.params import Sun, Mercury, Venus, Earth, Moon, Mars, Jupiter, Saturn, Uranus, Neptune, gravity
@@ -128,14 +129,7 @@ class Controls:
         elif m.selected == 'Earth Satellites':
             m.disabled = True
             self.loading(True)
-            self.spheres = presets.satellites()
-            self.system_primary = self.spheres[0]
-            self.loading(False)
-
-        elif m.selected == 'Earth Satellites Fast':
-            m.disabled = True
-            self.loading(True)
-            self.spheres = presets.satellites(rows=2600, simple=True, fast=True)
+            self.spheres = presets.satellites(rows=2600)
             self.system_primary = self.spheres[0]
             self.set_zoom(self.system_primary.radius, 5)
             self.loading(False)
@@ -143,15 +137,42 @@ class Controls:
         elif m.selected == 'Earth Satellites Perturbed':
             m.disabled = True
             self.loading(True)
-            self.spheres = presets.satellites_perturbed(rows=2600, simple=True, fast=True, body_semi_latus_rectum=30000,
-                                                        body_eccentricity=0.4)
+            self.spheres = presets.satellites_perturbed(rows=2600, body_semi_latus_rectum=30000, body_eccentricity=0.4)
             self.system_primary = self.spheres[0]
             self.set_zoom(self.system_primary.radius, 5)
             self.loading(False)
 
+        elif m.selected == 'Hohmann Transfer':
+            m.disabled = True
+            self.loading(True)
+            self.spheres = presets.hohmann(start_time=datetime.datetime.now()+ datetime.timedelta(seconds=5000), inclination=30)
+            self.system_primary = self.spheres[0]
+            self.loading(False)
+
+        elif m.selected == 'Bi-Elliptic Transfer':
+            m.disabled = True
+            self.loading(True)
+            self.spheres = presets.bi_elliptic(start_time=datetime.datetime.now()+ datetime.timedelta(seconds=5000), inclination=75)
+            self.system_primary = self.spheres[0]
+            self.loading(False)
+
+        elif m.selected == 'General Transfer':
+            m.disabled = True
+            self.loading(True)
+            self.spheres = presets.general(start_time=datetime.datetime.now()+ datetime.timedelta(seconds=1000), inclination=120)
+            self.system_primary = self.spheres[0]
+            self.loading(False)
+
+        elif m.selected == 'Simple Plane Change':
+            m.disabled = True
+            self.loading(True)
+            self.spheres = presets.plane_change(start_time=datetime.datetime.now()+ datetime.timedelta(seconds=1000))
+            self.system_primary = self.spheres[0]
+            self.loading(False)
+
     def scenario_menu_dropdown(self):
-        c = ['Choose Scenario', 'Create Scenario', 'Earth Satellites', 'Earth Satellites Fast',
-             'Earth Satellites Perturbed', 'Other Scenarios']
+        c = ['Choose Scenario', 'Create Scenario', 'Earth Satellites', 'Earth Satellites Perturbed', 'Hohmann Transfer',
+             'Bi-Elliptic Transfer', 'General Transfer', 'Simple Plane Change', 'Other Scenarios']
         self.scenario_menu = menu(choices=c, bind=self.scenario_menu_func)
 
     def scenario_menu_reset(self, selected):
