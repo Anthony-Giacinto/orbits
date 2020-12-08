@@ -1,9 +1,11 @@
 """
 Contains classes for getting the position and velocity vectors of spacecraft in the geocentric-equatorial frame.
 
+Functions:
+    elements_multiple: Uses Elements class to find position and velocity vectors of multiple orbiting bodies.
+
 Classes:
     Elements: Finds the position and velocity vectors of the orbiting body using classical orbital elements.
-    ElementsMultiple: Uses Elements class to find position and velocity vectors of multiple orbiting bodies.
     DetermineElements: Finds classical orbital elements using position and velocity vectors in the
     geocentric-equatorial frame.
     DopplerRadar: Contains the position and velocity vectors of a satellite in the geocentric-equatorial frame
@@ -35,7 +37,6 @@ class Elements:
         epoch_angle: (float) Either the true anomaly, argument of latitude, or true longitude (default is 0.0).
         gravitational_parameter: (float) Gravitational parameter (default is Earth.gravitational_parameter).
         degrees: (bool) True if all angles are given in degrees, False if radians (default is False).
-        chosen_matrix: (numpy array) The transformation matrix used if any (default is None).
 
      Property Objects:
          position: (numpy array) The position vector of the orbiting body in the Geocentric-Equatorial frame.
@@ -75,25 +76,24 @@ class Elements:
         self._epoch_angle = epoch_angle
         self.gravitational_parameter = gravitational_parameter
         self.degrees = degrees
-        self.chosen_matrix = None
+        self._chosen_matrix = None
 
     def __vector_conditions(self, vector):
-        """ Transforms the input vector from the perifocal frame to geocentric equatorial
-        if necessary, and updates chosen_matrix.
+        """ Transforms the input vector from the perifocal frame to geocentric equatorial if necessary.
 
         :param vector: (numpy array) The vector to transform.
         :return: (numpy array) The vector (transformed, if necessary).
         """
 
         if self.eccentricity != 0 and math.sin(self.inclination) != 0:
-            self.chosen_matrix = peri_to_geo(self.inclination, self.longitude_of_ascending_node, self.periapsis_angle)
-            return self.chosen_matrix.dot(vector)
+            self._chosen_matrix = peri_to_geo(self.inclination, self.longitude_of_ascending_node, self.periapsis_angle)
+            return self._chosen_matrix.dot(vector)
         elif self.eccentricity != 0 and math.sin(self.inclination) == 0:
-            self.chosen_matrix = peri_to_geo_i(self.periapsis_angle)
-            return self.chosen_matrix.dot(vector)
+            self._chosen_matrix = peri_to_geo_i(self.periapsis_angle)
+            return self._chosen_matrix.dot(vector)
         elif self.eccentricity == 0 and math.sin(self.inclination) != 0:
-            self.chosen_matrix = peri_to_geo_e(self.inclination, self.longitude_of_ascending_node)
-            return self.chosen_matrix.dot(vector)
+            self._chosen_matrix = peri_to_geo_e(self.inclination, self.longitude_of_ascending_node)
+            return self._chosen_matrix.dot(vector)
         else:
             return vector
 
@@ -137,55 +137,6 @@ class Elements:
         return vpython_rotation().dot(self.__vector_conditions(velocity_vector))
 
 
-class ElementsMultiple:
-    """ Finds the position and velocity vectors of multiple orbiting bodies from the given classical orbital
-    elements (vectors are given in the Geocentric-Equatorial frame).
-
-    Instance Attributes:
-        semi_latus_rectum: (list) Tuple of semilatus rectums for each orbit.
-        eccentricity: (list) Tuple of eccentricities for each orbit.
-        inclination: (list) Tuple of inclinations for each orbit.
-        longitude_of_ascending_node: (list) Tuple of longitudes of the ascending node for each orbit.
-        periapsis_angle: (list) Tuple of periapsis angles for each orbit; Either the argument of periapsis
-        or the longitude of periapsis.
-        epoch_angle: (list) Tuple of epoch angles for each orbit; Either the true anomaly, argument of latitude,
-        or true longitude.
-        gravitational_parameter: (float) Gravitational parameter (default is Earth.gravitational_parameter).
-        degrees: (bool) True if all angles are given in degrees, False if radians (default is False).
-        positions: (list) List of all the position vectors.
-        velocities: (list) List of all the velocity vectors.
-
-    Notes:
-        Each argument tuple must be of the same length.
-        The indices from each argument tuple represent a single orbit (semi_latus_rectum[0], eccentricity[0], etc).
-    """
-
-    def __init__(self, semi_latus_rectum, eccentricity, inclination, longitude_of_ascending_node, periapsis_angle,
-                 epoch_angle, gravitational_parameter=Earth.gravitational_parameter, degrees=False):
-        """
-        :param semi_latus_rectum: (list) Tuple of semilatus rectums for each orbit.
-        :param eccentricity: (list) Tuple of eccentricities for each orbit.
-        :param inclination: (list) Tuple of inclinations for each orbit.
-        :param longitude_of_ascending_node: (list) Tuple of longitudes of the ascending node for each orbit.
-        :param periapsis_angle: (list) Tuple of periapsis angles for each orbit; Either the argument of periapsis
-        or the longitude of periapsis.
-        :param epoch_angle: (list) Tuple of epoch angles for each orbit; Either the true anomaly, argument of latitude,
-        or true longitude.
-        :param gravitational_parameter: (float) Gravitational parameter (default is Earth.gravitational_parameter).
-        :param degrees: (bool) True if all angles are given in degrees, False if radians (default is False).
-        """
-
-        self.positions, self.velocities, self.chosen_matrices = [], [], []
-        for i in range(len(semi_latus_rectum)):
-            vectors = Elements(semi_latus_rectum=semi_latus_rectum[i], eccentricity=eccentricity[i],
-                               inclination=inclination[i], periapsis_angle=periapsis_angle[i],
-                               longitude_of_ascending_node=longitude_of_ascending_node[i], epoch_angle=epoch_angle[i],
-                               gravitational_parameter=gravitational_parameter, degrees=degrees)
-            self.positions.append(vectors.position)
-            self.velocities.append(vectors.velocity)
-            self.chosen_matrices.append(vectors.chosen_matrix)
-
-
 def elements_multiple(semi_latus_rectum, eccentricity, inclination, longitude_of_ascending_node, periapsis_angle,
                       epoch_angle, gravitational_parameter=Earth.gravitational_parameter, degrees=False):
     """
@@ -202,10 +153,10 @@ def elements_multiple(semi_latus_rectum, eccentricity, inclination, longitude_of
     or true longitude.
     :param gravitational_parameter: (float) Gravitational parameter (default is Earth.gravitational_parameter).
     :param degrees: (bool) True if all angles are given in degrees, False if radians (default is False).
-    :return: (list(lists)) The positions, velocities, and chosen matrices.
+    :return: (list(lists)) The positions and velocities.
     """
 
-    positions, velocities, chosen_matrices = [], [], []
+    positions, velocities = [], []
     for slr, e, i, loan, pa, ea in zip(semi_latus_rectum, eccentricity, inclination, longitude_of_ascending_node,
                                        periapsis_angle, epoch_angle):
         vectors = Elements(semi_latus_rectum=slr, eccentricity=e,  inclination=i, periapsis_angle=pa,
@@ -213,8 +164,7 @@ def elements_multiple(semi_latus_rectum, eccentricity, inclination, longitude_of
                            gravitational_parameter=gravitational_parameter, degrees=degrees)
         positions.append(vectors.position)
         velocities.append(vectors.velocity)
-        chosen_matrices.append(vectors.chosen_matrix)
-    return positions, velocities, chosen_matrices
+    return positions, velocities
 
 
 class DetermineElements:

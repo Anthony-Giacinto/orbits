@@ -10,10 +10,15 @@ Functions:
     station_location: Finds the position vector of a ground station in the geocentric-equatorial frame from its
     latitude, elevation above sea level, and the local sidereal time assuming an ellipsoidal Earth.
     decimal_length: Finds the amount of decimal places in the given float.
+    integer_length: Finds the amount if numbers that make up an integer.
+    round_to_place: Rounds some given number (int/float) to the given integer place.
+    random_element_angles: Picks random values for longitude of ascending node, periapsis angle, and epoch angle
+    in radians.
 """
 
 
 import math
+import random
 import os
 import numpy as np
 import pandas as pd
@@ -124,3 +129,20 @@ def round_to_place(num, place):
         for i in range(len(d), len_a):
             d += '0'
         return int(d)
+
+
+def random_element_angles(num, step=0.05):
+    """ Picks random values for longitude of ascending node, periapsis angle, and epoch angle in radians.
+
+    :param num: (int) The desired length of the created lists.
+    :param step: (float) The step size for the range of random angles that may be chosen from (default is 0.05).
+    :return: (lists) Longitude of ascending node, periapsis angle, and epoch angle lists.
+    """
+
+    loan, pa, ea = [], [], []
+    angles = np.arange(0, 2*math.pi, step)
+    for i in range(num):
+        loan.append(random.choice(angles))
+        pa.append(random.choice(angles))
+        ea.append(random.choice(angles))
+    return loan, pa, ea
