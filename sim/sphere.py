@@ -1,4 +1,4 @@
-from vpython import sphere, simple_sphere, vector, color, textures, local_light, label
+from orbits_GUI.vpython import sphere, simple_sphere, vector, color, textures, local_light, label
 from orbits_GUI.astro.params import gravity
 from orbits_GUI.astro.vectors import Elements
 from orbits_GUI.astro.maneuvers import Maneuver
@@ -34,6 +34,8 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
         ((time, delta v, burn angle), ...) or (time, delta v, burn angle) for only one impulse (default is None).
         maneuver: (class) A named maneuver class; will automatically created impulses instructions based off of
         the maneuver; will need to add the appropriate instance attributes for the maneuver.
+        preset: (params class) Some pre-made parameters class (contains radius, mass, rotational speed, etc)
+        (default is None).
 
         The parameters from simple_sphere, sphere, Elements, and Maneuver are also available.
 
@@ -49,7 +51,8 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
     up = vector(0,1,0)
 
     def __init__(self, vel=(0.0,0.0,0.0), mass=1.0, rotation_speed=0.0, name='Sphere', simple=False, massive=True,
-                 labelled=False, primary=None, light_color='white', impulses=None, maneuver=None, **kwargs):
+                 labelled=False, primary=None, light_color='white', impulses=None, maneuver=None, preset=None,
+                 **kwargs):
         """
         :param pos: (tuple/VPython vector) Position of the sphere; if primary is given, will be w.r.t the primary
         (default is vector(0, 0, 0)).
@@ -70,19 +73,33 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
         ((time, delta v, burn angle), ...) or (time, delta v, burn angle) for only one impulse (default is None).
         :param maneuver: (class) A named maneuver class; will automatically created impulses instructions based off of
         the maneuver; will need to add the appropriate instance attributes for the maneuver.
+        :param preset: (params class) Some pre-made parameters class (contains radius, mass, rotational speed, etc)
+        (default is None).
 
         The parameters from simple_sphere, sphere, Elements, and Maneuver are also available.
         """
 
-        keys = kwargs.keys()
-        self.mass = mass
-        self.rotation_speed = rotation_speed
-        self.name = name
         self.primary = primary
         self.massive = massive
         self.light_color = light_color
         self._labelled = labelled
-        self.grav_parameter = self.mass*gravity()
+        self.preset = preset
+
+        # If a preset is given, uses preset attributes instead of the given attributes.
+        if self.preset:
+            self.mass = preset.mass
+            self.rotation_speed = preset.angular_rotation
+            self.grav_parameter = preset.gravitational_parameter
+            self.name = str(preset())
+            kwargs['radius'] = preset.radius
+            kwargs['texture'] = preset.texture
+        else:
+            self.mass = mass
+            self.rotation_speed = rotation_speed
+            self.name = name
+            self.grav_parameter = self.mass*gravity()
+
+        keys = kwargs.keys()
 
         # If a maneuver class is given, will create the appropriate impulse instructions.
         # If impulses is given with no maneuver class given, will use those instructions instead.
@@ -94,7 +111,7 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
         else:
             self.impulses = impulses
 
-        # If a maneuver class is given or own impulse instructions given, will get list of the impulse times.
+        # If a maneuver class is given or own impulse instructions given, will get a list of the impulse times.
         if self.impulses is not None:
             try:
                 self.times = list(zip(*self.impulses))[0]
@@ -118,7 +135,7 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
                 self._position = vector(0, 0, 0)
 
         # If primary is another Sphere, pos and vel are with respect to the primary;
-        # This will update pos and vel to be with respect to the origin of the reference frame.
+        # This will update pos and vel to be with respect to the origin of the VPython reference frame.
         if isinstance(self.primary, Sphere):
             kwargs['pos'] = self._position + self.primary.pos
             self._vel = self._velocity + self.primary.vel
@@ -226,7 +243,7 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
 
     def __make_label(self):
         self.label = label(text=self.label_text(), align='left', height=20,
-                           pixel_pos=True, pos=vector(20, self.canvas.height-100, 0))
+                           pixel_pos=True, pos=vector(20, self.canvas.height-80, 0), box=False)
 
     def rotate(self, angle=None, axis=up, origin=None):
         """ Rotates the Sphere about its axis.
@@ -241,9 +258,7 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
     def delete(self):
         """ Deletes the Sphere and removes any lights, labels, and trails associated with the Sphere as well. """
 
-        self.visible = False
-        self.luminous = False
-        self.labelled = False
+        self.visible = self.luminous = self.labelled = False
         self.clear_trail()
         self.__del__()
 

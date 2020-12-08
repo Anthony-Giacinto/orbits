@@ -1,7 +1,7 @@
 import numpy as np
 import datetime
 import pyautogui
-from vpython import vector, canvas, rate, mag, label, norm
+from orbits_GUI.vpython import vector, canvas, rate, mag, label, norm
 from orbits_GUI.sim.controls import Controls
 from orbits_GUI.astro.transf import rodrigues_rotation
 from orbits_GUI.astro.rfunc import decimal_length, round_to_place, integer_length
@@ -19,10 +19,10 @@ class Simulate:
 
     _gravity = _scene = _spheres = _massives = _time_stamp = _time = _dt = _frame_rate = _controls = None
     _screen_width, _screen_height = pyautogui.size()
-    # display_width = 1900
-    # display_height = 685
+    _build_height = _screen_height - 400
+    _simulate_height = _screen_height - 250
 
-    def __force_gravity(self, sphere_one, sphere_two):
+    def __universal_gravitation(self, sphere_one, sphere_two):
         """ Uses Newton's Law of Universal Gravitation to find the force of gravity on
         the first sphere due to the second sphere.
 
@@ -45,7 +45,7 @@ class Simulate:
             force = vector(0, 0, 0)
             for sph2 in self._massives:
                 if sph1 is not sph2:
-                    force += self.__force_gravity(sph1, sph2)
+                    force += self.__universal_gravitation(sph1, sph2)
             return force
 
         return [f(sph) for sph in self._spheres]
@@ -60,7 +60,7 @@ class Simulate:
             sph.pos += sph.vel*self._dt
 
             if sph.rotation_speed:
-                sph.rotate(angle=sph.rotation_speed*self._dt, axis=vector(0, 1, 0))
+                sph.rotate(angle=sph.rotation_speed*self._dt)
 
             if sph.labelled:
                 sph.label.text = sph.label_text()
@@ -82,7 +82,6 @@ class Simulate:
                 places = integer_length(self._dt)
                 seconds2 = round_to_place(seconds2, places + 1)
 
-            print(seconds1, seconds2)
             if seconds1 == seconds2:
 
                 if isinstance(sphere.impulses[0], tuple):
@@ -118,6 +117,8 @@ class Simulate:
     def __build_scenario(self):
         """ The scenario building phase of the simulation. """
 
+        self._scene.height = self._build_height
+
         if self._time_stamp:
             self._time_stamp.visible = False
             self._time_stamp = None
@@ -125,30 +126,31 @@ class Simulate:
         while not self._controls.scenario_running:
             self._spheres = self._controls.spheres
             self._dt = self._controls.dt
-            self._frame_rate = self._controls.frame_rate
 
     def __simulate_scenario(self):
         """ Simulates the given scenario. """
 
-        #self._scene.height = 850
-        self._start_time = datetime.datetime.now()
-        self._start_time -= datetime.timedelta(microseconds=self._start_time.microsecond)
+        self._scene.height = self._simulate_height
+
+        if self._controls.start_time == 'now':
+            self._start_time = datetime.datetime.now()
+            self._start_time -= datetime.timedelta(microseconds=self._start_time.microsecond)
+        else:
+            self._start_time = self._controls.start_time
+
         self._time = self._start_time
         self._time_stamp = label(text=f'{self._time.date()}\n{self._time.time()}', align='left', height=20,
-                                 pixel_pos=True, pos=vector(20, self._scene.height-28, 0))
+                                 pixel_pos=True, pos=vector(20, self._scene.height-28, 0), box=False)
 
         while self._controls.scenario_running:
+            self._spheres = self._controls.spheres
             self._dt = self._controls.dt
-            self._frame_rate = self._controls.frame_rate
-            rate(self._frame_rate)
+            rate(self._controls.frame_rate)
             if self._controls.running:
-                self._spheres = self._controls.spheres
                 self._massives = [sph for sph in self._spheres if sph.massive]
                 self.__update_spheres()
-                self._time_stamp.text = f'{self._time.date()}\n{self._time.time()}'
                 self._time += datetime.timedelta(seconds=self._dt)
-            else:
-                pass
+                self._time_stamp.text = f'Date:     {self._time.date()}\nTime:     {self._time.time()}'
 
     def __set_controls(self):
         """ Sets the controls for the GUI. """
@@ -158,13 +160,17 @@ class Simulate:
         self._gravity = cont.gravity
         return cont
 
+    def __set_scene(self):
+        self._scene = canvas(width=self._screen_width-20, height=self._build_height)
+        self._scene.lights[1].visible = False
+        self._scene.lights.pop(1)
+        #self._scene.resizable = False
+
     def start(self):
         """ Starts the simulation program. """
 
-        self._scene = canvas(width=self._screen_width-20, height=self._screen_height-395)
-        #self._scene.resizable = False
+        self.__set_scene()
         self._controls = self.__set_controls()
-
         while True:
             self.__build_scenario()
             self.__simulate_scenario()
