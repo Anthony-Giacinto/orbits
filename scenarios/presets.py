@@ -1,9 +1,8 @@
 import math
 import numpy as np
-import random as ran
 from orbits_GUI.sim.sphere import Sphere
 from orbits_GUI.astro.params import Earth, Moon
-from orbits_GUI.astro.rfunc import sat_data
+from orbits_GUI.astro.rfunc import sat_data, random_element_angles
 from orbits_GUI.astro.vectors import Elements, elements_multiple
 from orbits_GUI.astro.maneuvers import Hohmann, BiElliptic, GeneralTransfer, SimplePlaneChange
 
@@ -14,20 +13,14 @@ def satellites(rows=30, radius=65.0):
     row_indices = np.arange(rows)
     data = sat_data(row_indices=row_indices)
     semi_latus_rectum, eccentricity, inclination, masses, names = data
-    loan, pa, ea = [], [], []
-    angles = np.arange(0, 2*math.pi, 0.05)
-    for i in range(len(semi_latus_rectum)):
-        loan.append(ran.choice(angles))
-        pa.append(ran.choice(angles))
-        ea.append(ran.choice(angles))
+    loan, pa, ea = random_element_angles(len(semi_latus_rectum))
 
     vectors = elements_multiple(semi_latus_rectum=semi_latus_rectum, eccentricity=eccentricity, inclination=inclination,
                                 longitude_of_ascending_node=loan, periapsis_angle=pa, epoch_angle=ea)
-    spheres = [Sphere(mass=Earth.mass, radius=Earth.radius, rotation_speed=Earth.angular_rotation,
-                      texture=Earth.texture, name=str(Earth()))]
+    spheres = [Sphere(preset=Earth)]
     for p, v, m, n in zip(vectors[0], vectors[1], masses, names):
-        spheres.append(Sphere(pos=p, vel=v, mass=m, radius=radius, name=n, massive=False,
-                              primary=spheres[0], simple=True))
+        spheres.append(Sphere(pos=p, vel=v, mass=m, radius=radius, name=n, massive=False,  primary=spheres[0],
+                              simple=True))
     return spheres
 
 
@@ -43,26 +36,18 @@ def satellites_perturbed(rows=30, radius=65.0, perturbing_body=Moon, body_semi_l
     inclination = list(data[2]) + [perturbing_body.inclination]
     masses = list(data[3])
     names = list(data[4])
-    loan, pa, ea = [], [], []
-    angles = np.arange(0, 2*math.pi, 0.05)
-    for i in range(len(semi_latus_rectum)):
-        loan.append(ran.choice(angles))
-        pa.append(ran.choice(angles))
-        ea.append(ran.choice(angles))
+    loan, ea, pa = random_element_angles(len(semi_latus_rectum))
 
     vectors = elements_multiple(semi_latus_rectum=semi_latus_rectum, eccentricity=eccentricity, inclination=inclination,
                                 longitude_of_ascending_node=loan, periapsis_angle=pa, epoch_angle=ea)
     positions = vectors[0]
     velocities = vectors[1]
-    spheres = [Sphere(mass=Earth.mass, radius=Earth.radius, rotation_speed=Earth.angular_rotation,
-                      texture=Earth.texture, name=str(Earth()))]
-    spheres.append(Sphere(pos=positions.pop(), vel=velocities.pop(), mass=perturbing_body.mass,
-                          radius=perturbing_body.radius, rotation_speed=perturbing_body.angular_rotation,
-                          texture=perturbing_body.texture, name=str(perturbing_body()), primary=spheres[0],
+    spheres = [Sphere(preset=Earth)]
+    spheres.append(Sphere(pos=positions.pop(), vel=velocities.pop(), preset=Moon, primary=spheres[0],
                           make_trail=True, retain=200, trail_color='red'))
     for p, v, m, n in zip(positions, velocities, masses, names):
-        spheres.append(Sphere(pos=p, vel=v, mass=m, radius=radius, name=n, massive=False,
-                              primary=spheres[0], simple=True))
+        spheres.append(Sphere(pos=p, vel=v, mass=m, radius=radius, name=n, massive=False, primary=spheres[0],
+                              simple=True))
     return spheres
 
 
@@ -82,12 +67,9 @@ def hohmann(initial_radius=Earth.radius+2000, final_radius=Earth.radius+20000, i
     first impulse.
     """
 
+    earth = Sphere(preset=Earth)
     vectors = Elements(semi_latus_rectum=initial_radius, inclination=inclination,
                        longitude_of_ascending_node=longitude_of_ascending_node, epoch_angle=epoch_angle, degrees=True)
-
-    earth = Sphere(mass=Earth.mass, radius=Earth.radius, rotation_speed=Earth.angular_rotation, texture=Earth.texture,
-                   name=str(Earth()))
-
     satellite = Sphere(pos=vectors.position, vel=vectors.velocity, mass=mass, radius=sat_radius, name='Satellite',
                        primary=earth, maneuver=Hohmann, make_trail=True, trail_limit=50,
                        initial_radius=initial_radius, final_radius=final_radius,
@@ -114,12 +96,9 @@ def bi_elliptic(initial_radius=Earth.radius+2000, final_radius=Earth.radius+7000
     first impulse.
     """
 
+    earth = Sphere(preset=Earth)
     vectors = Elements(semi_latus_rectum=initial_radius, inclination=inclination,
                        longitude_of_ascending_node=longitude_of_ascending_node, epoch_angle=epoch_angle, degrees=True)
-
-    earth = Sphere(mass=Earth.mass, radius=Earth.radius, rotation_speed=Earth.angular_rotation, texture=Earth.texture,
-                   name=str(Earth()))
-
     satellite = Sphere(pos=vectors.position, vel=vectors.velocity, mass=mass, radius=sat_radius, name='Satellite',
                        primary=earth, maneuver=BiElliptic, make_trail=True, trail_limit=50,
                        initial_radius=initial_radius, final_radius=final_radius, transfer_apoapsis=transfer_apoapsis,
@@ -145,12 +124,9 @@ def general(initial_radius=Earth.radius+2000, final_radius=Earth.radius+20000, t
     first impulse; must not have more decimal places than dt (default is 10000.0).
     """
 
+    earth = Sphere(preset=Earth)
     vectors = Elements(semi_latus_rectum=initial_radius, inclination=inclination,
                        longitude_of_ascending_node=longitude_of_ascending_node, epoch_angle=epoch_angle, degrees=True)
-
-    earth = Sphere(mass=Earth.mass, radius=Earth.radius, rotation_speed=Earth.angular_rotation, texture=Earth.texture,
-                   name=str(Earth()))
-
     satellite = Sphere(pos=vectors.position, vel=vectors.velocity, mass=mass, radius=sat_radius, name='Satellite',
                        primary=earth, maneuver=GeneralTransfer, make_trail=True, trail_limit=50,
                        initial_radius=initial_radius, final_radius=final_radius, start_time=start_time,
@@ -159,8 +135,8 @@ def general(initial_radius=Earth.radius+2000, final_radius=Earth.radius+20000, t
     return [earth, satellite]
 
 
-def plane_change(radius=Earth.radius+3000, inclination_one=0.0, inclination_two=math.pi/3,
-                 longitude_of_ascending_node=0.0, epoch_angle=0.0, mass=1.0, sat_radius=100.0, start_time=10000.0):
+def plane_change(radius=Earth.radius+3000, inclination_one=20, inclination_two=30,
+                 longitude_of_ascending_node=0.0, epoch_angle=0.0, mass=10.0, sat_radius=100.0, start_time=10000.0):
     """ Animates a satellite performing a simple plane change around Earth.
 
     :param radius: (float) The radius of the orbits (default is Earth.radius+2000).
@@ -169,20 +145,18 @@ def plane_change(radius=Earth.radius+3000, inclination_one=0.0, inclination_two=
     :param longitude_of_ascending_node: (float) The longitude of ascending node of the circular orbit in radians;
     does nothing if inclination is 0 (default is 0.0).
     :param epoch_angle: (float) The epoch angle of the circular orbit (default is 0.0).
-    :param mass: (float) The mass of the satellite in kg (default is 1.0).
+    :param mass: (float) The mass of the satellite in kg (default is 10.0).
     :param sat_radius: (float) The radius of the satellite sphere (default is 100.0).
     :param start_time: (float) The amount of time that will pass within the simulation in seconds before the
     first impulse.
     """
 
+    earth = Sphere(preset=Earth)
     vectors = Elements(semi_latus_rectum=radius, inclination=inclination_one,
                        longitude_of_ascending_node=longitude_of_ascending_node, epoch_angle=epoch_angle, degrees=True)
-
-    earth = Sphere(mass=Earth.mass, radius=Earth.radius, rotation_speed=Earth.angular_rotation, texture=Earth.texture,
-                   name=str(Earth()))
-
+    inclination_change = math.radians(inclination_two - inclination_one)
     satellite = Sphere(pos=vectors.position, vel=vectors.velocity, mass=mass, radius=sat_radius, name='Satellite',
                        primary=earth, maneuver=SimplePlaneChange, make_trail=True, trail_limit=50,
-                       initial_radius=radius, start_time=start_time, inclination_change=inclination_two-inclination_one,
+                       initial_radius=radius, start_time=start_time, inclination_change=inclination_change,
                        gravitational_parameter=Earth.gravitational_parameter)
     return [earth, satellite]
