@@ -56,22 +56,30 @@ def sat_data(file=__satellite_file, perigee='Perigee (km)', eccentricity='Eccent
     return semi_latus_rectum, e, i, m, n
 
 
-def station_position(latitude, elevation, local_sidereal_time):
+def station_position(latitude, elevation, local_sidereal_time, degrees=False):
     """ Finds the position vector of the ground station in the geocentric-equatorial frame from its
     latitude, elevation above sea level, and the local sidereal time assuming an ellipsoidal Earth.
 
-    :param latitude: (float) The latitude of the ground station in radians.
-    :param elevation: (float) The elevation above sea level of the ground station in radians.
-    :param local_sidereal_time: (float) The local sidereal time of the ground station in radians; this is the
+    :param latitude: (float) The latitude of the ground station.
+    :param elevation: (float) The elevation above sea level of the ground station.
+    :param local_sidereal_time: (float) The local sidereal time of the ground station; this is the
     Greenwich sidereal time plus the longitude of the station measured eastward from Greenwich, where the
     Greenwich sidereal time is the angle from the vernal equinox direction to the Greenwich meridian.
+    :param degrees: (bool) True if all angles are given in degrees, False if radians (default is False).
     :return: (numpy array) The position vector of the ground station in the geocentric-equatorial frame.
     """
 
-    denominator = (1 - Earth.ellipsoid_eccentricity**2*(math.sin(latitude))**2)**0.5
-    x = math.cos(latitude)*(Earth.equatorial_radius/denominator + elevation)
-    z = math.sin(latitude)*(Earth.polar_radius*(1 - Earth.ellipsoid_eccentricity**2)/denominator + elevation)
-    return np.array([x*math.cos(local_sidereal_time), x*math.sin(local_sidereal_time), z])
+    if degrees:
+        lat = math.radians(latitude)
+        lst = math.radians(local_sidereal_time)
+    else:
+        lat = latitude
+        lst = local_sidereal_time
+
+    denominator = (1 - Earth.ellipsoid_eccentricity**2*(math.sin(lat))**2)**0.5
+    x = math.cos(lat)*(Earth.equatorial_radius/denominator + elevation)
+    z = math.sin(lat)*(Earth.polar_radius*(1 - Earth.ellipsoid_eccentricity**2)/denominator + elevation)
+    return np.array([x*math.cos(lst), x*math.sin(lst), z])
 
 
 def inclination_from_launch(latitude, azimuth):

@@ -11,7 +11,6 @@ Functions:
     rotate_x: (numpy array) Basic rotation matrix about the x-axis.
     rotate_y: (numpy array) Basic rotation matrix about the y-axis.
     rotate_z: (numpy array) Basic rotation matrix about the z-axis.
-    vpython_rotation: (numpy array) A matrix to rotate vectors to match the desired axis orientation in VPython.
     rodrigues_rotation: (numpy array) A matrix that rotates about some given vector by some given angle.
     geo_to_topo: (numpy array) A matrix to transform a vector from the Geocentric-Equatorial frame to
     the Topocentric frame.
@@ -109,20 +108,10 @@ def rotate_z(angle):
     return np.array([[math.cos(angle), -math.sin(angle), 0], [math.sin(angle), math.cos(angle), 0], [0, 0, 1]])
 
 
-def vpython_rotation():
-    """ A matrix to rotate vectors to match the desired axis orientation in VPython
-    (x-axis points towards the screen, y-axis points to the right, the z-axis points up).
-
-    :return: (numpy array) The transformation matrix.
-    """
-
-    return np.array([[0, 1, 0], [0, 0, 1], [1, 0, 0]])
-
-
 def rodrigues_rotation(vector, angle):
-    """ A matrix that rotates about some given vector by some given angle.
+    """ A matrix that rotates about some given unit vector by some given angle.
 
-    :param vector: (numpy array) The vector to be rotated about.
+    :param vector: (numpy array) The unit vector to be rotated about.
     :param angle: (float) The angle of rotation about the given vector in radians.
     :return: (numpy array) The transformation matrix.
     """

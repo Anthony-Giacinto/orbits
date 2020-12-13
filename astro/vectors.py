@@ -21,7 +21,7 @@ from orbits_GUI.astro.params import Earth
 from orbits_GUI.astro.afunc import orbital_radius, angular_momentum, node_vector, eccentricity_vector, \
     semi_latus_rectum, semi_major_axis, mechanical_energy
 from orbits_GUI.astro.rfunc import station_position
-from orbits_GUI.astro.transf import peri_to_geo, peri_to_geo_i, peri_to_geo_e, vpython_rotation, topo_to_geo
+from orbits_GUI.astro.transf import peri_to_geo, peri_to_geo_i, peri_to_geo_e, topo_to_geo
 
 
 class Elements:
@@ -125,7 +125,7 @@ class Elements:
 
         position_magnitude = orbital_radius(self.semi_latus_rectum, self.eccentricity, self.epoch_angle)
         position_vector = position_magnitude*np.array([math.cos(self.epoch_angle), math.sin(self.epoch_angle), 0])
-        return vpython_rotation().dot(self.__vector_conditions(position_vector))
+        return self.__vector_conditions(position_vector)
 
     @property
     def velocity(self):
@@ -134,7 +134,7 @@ class Elements:
         velocity_magnitude = (self.gravitational_parameter/self.semi_latus_rectum)**0.5
         velocity_vector = velocity_magnitude * \
                           np.array([-math.sin(self.epoch_angle), self.eccentricity + math.cos(self.epoch_angle), 0])
-        return vpython_rotation().dot(self.__vector_conditions(velocity_vector))
+        return self.__vector_conditions(velocity_vector)
 
 
 def elements_multiple(semi_latus_rectum, eccentricity, inclination, longitude_of_ascending_node, periapsis_angle,
@@ -370,16 +370,6 @@ class DopplerRadar:
     """ Contains the position and velocity vectors of a satellite in the geocentric-equatorial frame
     (and topocentric frame) if given doppler radar position and velocity measurements.
 
-    Instance Attributes:
-        positions: (list(float)) The distance, azimuth, and altitude of the spacecraft (angles in radians)
-        (default is None).
-        speeds: (list(float)) The rate of change of distance, azimuth, and altitude of the spacecraft
-        (angles in radians) (default is None).
-        station_location: (list(float)) The latitude, elevation, and the local sidereal time all in radians
-        (default is None).
-        angular_velocity: (float) The magnitude of the angular velocity of earth; gets converted into a
-        numpy array (default is Earth.angular_rotation).
-
     Properties:
         topo_position: (numpy array) The satellite position vector in the topocentric frame.
         Requires the positions argument.
@@ -389,35 +379,81 @@ class DopplerRadar:
         Requires the positions and station_location arguments.
         geo_velocity: (numpy array) The satellite velocity vector in the geocentric frame.
         Requires the positions, speeds, and station_location arguments.
+        angular_velocity: (numpy array) The angular velocity of earth.
     """
 
-    def __init__(self, positions=None, speeds=None, station_location=None, angular_velocity=Earth.angular_rotation):
+    def __init__(self, positions, speeds, station_location, angular_velocity=Earth.angular_rotation, degrees=False):
         """
-        :param positions: (list(float)) The distance, azimuth, and altitude of the spacecraft (angles in radians)
-        (default is None).
-        :param speeds: (list(float)) The rate of change of distance, azimuth, and altitude of the spacecraft
-        (angles in radians) (default is None).
-        :param station_location: (list(float)) The latitude, elevation, and the local sidereal time all in radians
-        (default is None).
+        :param positions: (tuple(float)) The distance, azimuth, and altitude of the spacecraft.
+        :param speeds: (tuple(float)) The rate of change of distance, azimuth, and altitude of the spacecraft.
+        :param station_location: (tuple(float)) The elevation, latitude, and the local sidereal time.
         :param angular_velocity: (float) The magnitude of the angular velocity of earth; gets converted into a
         numpy array (default is Earth.angular_rotation).
+        :param degrees: (bool) True if all angles are given in degrees, False if radians (default is False).
         """
 
-        self.distance = positions[0]
-        self.azimuth = positions[1]
-        self.altitude = positions[2]
-        self.distance_dot = speeds[0]
-        self.azimuth_dot = speeds[1]
-        self.altitude_dot = speeds[2]
-        self.latitude = station_location[0]
-        self.elevation = station_location[1]
-        self.local_sidereal_time = station_location[2]
-        self.angular_velocity = np.array([0, 0, angular_velocity])
+        self._distance = positions[0]
+        self._azimuth = positions[1]
+        self._altitude = positions[2]
+        self._distance_dot = speeds[0]
+        self._azimuth_dot = speeds[1]
+        self._altitude_dot = speeds[2]
+        self._elevation = station_location[0]
+        self._latitude = station_location[1]
+        self._local_sidereal_time = station_location[2]
+        self._angular_velocity = angular_velocity
+        self._degrees = degrees
+
+    def __deg(self, attr):
+        if self._degrees:
+            return math.radians(attr)
+        else:
+            return attr
 
     def __transform(self):
         """ A matrix to transform a vector from the topocentric frame to the geocentric-equatorial frame. """
 
         return topo_to_geo(self.latitude, self.local_sidereal_time)
+
+    @property
+    def distance(self):
+        return self.__deg(self._distance)
+
+    @property
+    def azimuth(self):
+        return self.__deg(self._azimuth)
+
+    @property
+    def altitude(self):
+        return self.__deg(self._altitude)
+
+    @property
+    def distance_dot(self):
+        return self.__deg(self._distance_dot)
+
+    @property
+    def azimuth_dot(self):
+        return self.__deg(self._azimuth_dot)
+
+    @property
+    def altitude_dot(self):
+        return self.__deg(self._altitude_dot)
+
+    @property
+    def latitude(self):
+        return self.__deg(self._latitude)
+
+    @property
+    def elevation(self):
+        return self.__deg(self._elevation)
+
+    @property
+    def local_sidereal_time(self):
+        return self.__deg(self._local_sidereal_time)
+
+    @property
+    def angular_velocity(self):
+        return np.array([0, 0, self.__deg(self._angular_velocity)])
 
     @property
     def topo_position(self):
@@ -447,8 +483,8 @@ class DopplerRadar:
         """ The satellite position vector in the geocentric-equatorial frame.
         Requires the positions and station_location arguments. """
 
-        location = station_position(self.latitude, self.elevation, self.local_sidereal_time)
-        return np.dot(self.__transform(), self.topo_position) + location
+        return np.dot(self.__transform(), self.topo_position) + \
+               station_position(self.latitude, self.elevation, self.local_sidereal_time)
 
     @property
     def geo_velocity(self):
@@ -472,6 +508,7 @@ class Radar:
         station_location: (list(float)) The latitude, elevation, and the local sidereal time all in radians.
         measurement: (int) The radar measurement number; 1, 2, or 3 (default is 1).
         gravitational_parameter: The gravitational parameter (default is Earth.gravitational_parameter).
+        degrees: (bool) True if all angles are given in degrees, False if radians (default is False).
 
     Properties:
         position: (numpy array) The satellite position vector in the geocentric-equatorial frame.
@@ -479,7 +516,7 @@ class Radar:
     """
 
     def __init__(self, positions_one, positions_two, positions_three, station_location, measurement=1,
-                 gravitational_parameter=Earth.gravitational_parameter):
+                 gravitational_parameter=Earth.gravitational_parameter, degrees=False):
         """
         :param positions_one: (list(float)) The distance, azimuth, and altitude of the spacecraft for
         measurement one (angles in radians).
@@ -487,23 +524,26 @@ class Radar:
         measurement two (angles in radians).
         :param positions_three: (list(float)) The distance, azimuth, and altitude of the spacecraft for
         measurement three (angles in radians).
-        :param station_location: (list(float)) The latitude, elevation, and the local sidereal time all in radians.
+        :param station_location: (list(float)) The elevation, latitude, and the local sidereal time all in radians.
         :param measurement: (int) The radar measurement number; 1, 2, or 3 (default is 1).
         :param gravitational_parameter: The gravitational parameter (default is Earth.gravitational_parameter).
+        :param degrees: (bool) True if all angles are given in degrees, False if radians (default is False).
         """
 
-        self.__positions = [DopplerRadar(positions=pos, station_location=station_location).geo_position
+        self.degrees = degrees
+        self._positions = [DopplerRadar(positions=pos, speeds=(0, 0, 0), station_location=station_location,
+                                        degrees=self.degrees).geo_position
                             for pos in [positions_one, positions_two, positions_three]]
         self.__test_coplanar()
-        self.__magnitudes = [np.linalg.norm(pos) for pos in self.__positions]
+        self._magnitudes = [np.linalg.norm(pos) for pos in self._positions]
         self.measurement = measurement
         self.gravitational_parameter = gravitational_parameter
-        self.__chosen_position = self.__meas()
+        self._chosen_position = self.__meas()
 
     def __test_coplanar(self):
         """ Checks that the three radar measurements describe three coplanar position vectors. """
 
-        if np.dot(self.__positions[0], np.cross(self.__positions[1], self.__positions[2])) != 0:
+        if np.dot(self._positions[0], np.cross(self._positions[1], self._positions[2])) != 0:
             raise Exception('The radar measurements do not describe three coplanar position vectors.')
 
     def __meas(self):
@@ -513,30 +553,30 @@ class Radar:
         """
 
         if self.measurement == 2:
-            return self.__positions[1], self.__magnitudes[1]
+            return self._positions[1], self._magnitudes[1]
         elif self.measurement == 3:
-            return self.__positions[2], self.__magnitudes[2]
+            return self._positions[2], self._magnitudes[2]
         else:
-            return self.__positions[0], self.__magnitudes[0]
+            return self._positions[0], self._magnitudes[0]
 
     @property
     def position(self):
         """ The satellite position vector in the geocentric-equatorial frame. """
 
-        return self.__chosen_position[0]
+        return self._chosen_position[0]
 
     @property
     def velocity(self):
         """ The satellite velocity vector in the geocentric-equatorial frame. """
 
-        cross_1_2 = np.cross(self.__positions[0], self.__positions[1])
-        cross_2_3 = np.cross(self.__positions[1], self.__positions[2])
-        cross_3_1 = np.cross(self.__positions[2], self.__positions[0])
+        cross_1_2 = np.cross(self._positions[0], self._positions[1])
+        cross_2_3 = np.cross(self._positions[1], self._positions[2])
+        cross_3_1 = np.cross(self._positions[2], self._positions[0])
         d_vec = cross_1_2 + cross_2_3 + cross_3_1
-        n_vec = self.__magnitudes[2]*cross_1_2 + self.__magnitudes[0]*cross_2_3 + self.__magnitudes[1]*cross_3_1
-        s_vec = (self.__magnitudes[1] - self.__magnitudes[2])*self.__positions[0] + \
-                (self.__magnitudes[2] - self.__magnitudes[0])*self.__positions[1] + \
-                (self.__magnitudes[0] - self.__magnitudes[1])*self.__positions[2]
+        n_vec = self._magnitudes[2]*cross_1_2 + self._magnitudes[0]*cross_2_3 + self._magnitudes[1]*cross_3_1
+        s_vec = (self._magnitudes[1] - self._magnitudes[2])*self._positions[0] + \
+                (self._magnitudes[2] - self._magnitudes[0])*self._positions[1] + \
+                (self._magnitudes[0] - self._magnitudes[1])*self._positions[2]
 
-        return (np.cross(d_vec, self.__chosen_position[0])/self.__chosen_position[1] + s_vec) * \
+        return (np.cross(d_vec, self._chosen_position[0])/self._chosen_position[1] + s_vec) * \
                (self.gravitational_parameter/(np.linalg.norm(d_vec)*np.linalg.norm(n_vec)))**0.5

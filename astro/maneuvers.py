@@ -91,6 +91,8 @@ class Hohmann:
         impulses: (tuple(tuples)) The impulse instructions ((time, delta v, burn angle), ...).
     """
 
+    attrs = ['initial_radius', 'final_radius', 'gravitational_parameter', 'start_time']
+
     def __init__(self, initial_radius=0.0, final_radius=0.0, gravitational_parameter=0.0, start_time=0.0):
         """
         :param initial_radius: (float) The radius of the initial circular orbit.
@@ -133,7 +135,7 @@ class Hohmann:
                     (time2, self.delta_v_2, 0.0))
         elif isinstance(self.start_time, (int, float)):
             return ((self.start_time, self.delta_v_1, 0.0),
-                    (self.start_time+self.transfer_time, self.delta_v_2, 0.0))
+                    (self.start_time + self.transfer_time, self.delta_v_2, 0.0))
         else:
             raise TypeError
 
@@ -156,6 +158,8 @@ class BiElliptic:
         transfer_time_2: The amount of time between delta_v_2 and delta_v_3.
         impulses: (tuple(tuples)) The impulse instructions ((time, delta v, burn angle), ...).
     """
+
+    attrs = ['initial_radius', 'final_radius', 'gravitational_parameter', 'transfer_apoapsis', 'start_time']
 
     def __init__(self, initial_radius=0.0, final_radius=0.0, gravitational_parameter=0.0, transfer_apoapsis=0.0,
                  start_time=0.0):
@@ -239,6 +243,8 @@ class GeneralTransfer:
         transfer_time: The amount of time between delta_v_1 and delta_v_2.
         impulses: (tuple(tuples)) The impulse instructions ((time, delta v, burn angle), ...).
     """
+
+    attrs = ['initial_radius', 'final_radius', 'gravitational_parameter', 'transfer_eccentricity', 'start_time']
 
     def __init__(self, initial_radius=0.0, final_radius=0.0, gravitational_parameter=0.0, transfer_eccentricity=0.0,
                  start_time=0.0):
@@ -353,6 +359,8 @@ class SimplePlaneChange:
         impulses: (tuple) The impulse instructions (time, delta v, burn angle).
     """
 
+    attrs = ['initial_radius', 'final_radius', 'inclination_change', 'gravitational_parameter', 'start_time']
+
     def __init__(self, initial_radius=0.0, inclination_change=0.0, gravitational_parameter=0.0, start_time=0.0):
         """
         :param initial_radius: (float) The radius of the circular orbit.
@@ -377,7 +385,7 @@ class SimplePlaneChange:
 
     @property
     def impulses(self):
-        return (self.start_time, self.delta_v, self.burn_angle)
+        return self.start_time, self.delta_v, self.burn_angle
 
 
 class Maneuver:
@@ -391,5 +399,6 @@ class Maneuver:
         """
 
         self.maneuver = maneuver
+        params = {attr: kwargs[attr] for attr in kwargs.keys() if attr in self.maneuver.attrs}
         if self.maneuver:
-            self.impulses = self.maneuver(**kwargs).impulses
+            self.impulses = self.maneuver(**params).impulses

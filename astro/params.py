@@ -67,17 +67,28 @@ class Textures:
     """ Contains celestial body textures. """
 
     sun = 'images/sun_2.jpg'
-    mercury = 'images/mercury_1.jpg'
-    venus = 'images/venus_atmo_1.jpg'
-    venus_surf = 'images/venus_surf_1.jpg'
-    earth = 'images/earth_2.jpg'
-    earth8k = 'images/earth_8k.jpg'
-    moon = 'images/moon_2.jpg'
-    mars = 'images/mars_1.jpg'
-    jupiter = 'images/jupiter_1.jpg'
-    saturn = 'images/saturn_1.jpg'
-    uranus = 'images/uranus_1.jpg'
-    neptune = 'images/neptune_1.jpg'
+    mercury = 'images/2k_mercury.jpg'
+    mercury_8k = 'images/8k_mercury.jpg'
+    venus = 'images/2k_venus_atmosphere.jpg'
+    venus_4k = 'images/4k_venus_atmosphere.jpg'
+    venus_surf = 'images/2k_venus_surface.jpg'
+    venus_surf_8k = 'images/8k_venus_surface.jpg'
+    earth = 'earth_texture.jpg'
+    earth_8k = 'images/8k_earth_daymap.jpg'
+    moon = 'images/2k_moon.jpg'
+    moon_8k = 'images/8k_moon.jpg'
+    mars = 'images/2k_mars.jpg'
+    mars_8k = 'images/8k_mars.jpg'
+    jupiter = 'images/2k_jupiter.jpg'
+    jupiter_8k = 'images/8k_jupiter.jpg'
+    saturn = 'images/2k_saturn.jpg'
+    saturn_8k = 'images/8k_saturn.jpg'
+    uranus = 'images/2k_uranus.jpg'
+    neptune = 'images/2k_neptune.jpg'
+    ceres = 'images/4k_ceres_fictional.jpg'
+    eris = 'images/4k_eris_fictional.jpg'
+    haumea = 'images/4k_haumea_fictional.jpg'
+    makemake = 'images/4k_makemake_fictional.jpg'
 
 
 class Sun:
@@ -110,7 +121,7 @@ class Mercury:
     https://en.wikipedia.org/wiki/Mercury_(planet)
 
     Notes:
-        All orbital elements are in relation to orbit around the Sun.
+        All orbital elements and obliquity are in relation to orbit around the Sun.
         Inclination is in relation to the ecliptic, however.
 
     Class Variables:
@@ -126,6 +137,8 @@ class Mercury:
         inclination: (float) The inclination of mercury's orbit.
         name: (str) The lowercase of 'Mercury'.
         texture: (str) The mercury texture.
+        texture_8k: (str) An 8k version of texture.
+        obliquity: (float) The obliquity of mercury with respect to its orbital plane.
     """
 
     radius = 2439.7
@@ -140,6 +153,8 @@ class Mercury:
     inclination = math.radians(7.005)
     name = 'mercury'
     texture = Textures.mercury
+    texture_8k = Textures.mercury_8k
+    obliquity = math.radians(0.034)
 
     def __str__(self):
         return 'Mercury'
@@ -150,7 +165,7 @@ class Venus:
     https://en.wikipedia.org/wiki/Venus
 
     Notes:
-        All orbital elements are in relation to orbit around the Sun.
+        All orbital elements and obliquity are in relation to orbit around the Sun.
         Inclination is in relation to the ecliptic, however.
 
     Class Variables:
@@ -166,7 +181,10 @@ class Venus:
         inclination: (float) The inclination of venus's orbit.
         name: (str) The lowercase of 'Venus'.
         texture: (str) The venus texture.
+        texture_4k: (str) A 4k version of texture.
         texture_surf: (str) The venus surface texture.
+        texture_surf_8k: (str) An 8k version of texture_surf.
+        obliquity: (float) The obliquity of venus with respect to its orbital plane.
     """
 
     radius = 6051.8
@@ -181,7 +199,10 @@ class Venus:
     inclination = math.radians(3.39458)
     name = 'venus'
     texture = Textures.venus
+    texture_4k = Textures.venus_4k
     texture_surface = Textures.venus_surf
+    texture_surface_8k = Textures.venus_surf_8k
+    obliqutiy = math.radians(177.36)
 
     def __str__(self):
         return 'Venus'
@@ -192,7 +213,7 @@ class Earth:
     https://en.wikipedia.org/wiki/Earth
 
     Notes:
-        All orbital elements are in relation to orbit around the Sun.
+        All orbital elements and obliquity are in relation to orbit around the Sun.
         Inclination is in relation to the ecliptic, however.
 
     Class Variables:
@@ -211,7 +232,8 @@ class Earth:
         ellipsoid_eccentricity: (float) The eccentricity of the equatorial cross section of an ellipsoidal Earth model.
         name: (str) The lowercase of 'Earth'.
         texture: (str) The earth texture.
-        texture8k: (str) An 8k resolution earth texture.
+        texture_8k: (str) An 8k version of texture.
+        obliquity: (float) The obliquity of earth with respect to its orbital plane.
     """
 
     radius = 6371
@@ -229,7 +251,8 @@ class Earth:
     ellipsoid_eccentricity = 0.08182
     name = 'earth'
     texture = Textures.earth
-    texture8k = Textures.earth8k
+    texture_8k = Textures.earth_8k
+    obliquity = math.radians(23.4392811)
 
     def __str__(self):
         return 'Earth'
@@ -240,7 +263,7 @@ class Moon:
     https://en.wikipedia.org/wiki/Moon
 
     Notes:
-        All orbital elements are in relation to orbit around Earth.
+        All orbital elements and obliquity are in relation to orbit around Earth.
         Inclination is in relation to the ecliptic, however.
 
     Class Variables:
@@ -258,6 +281,8 @@ class Moon:
         inclination: (float) The inclination of the moon's orbit.
         name: (str) The lowercase of 'Moon'.
         texture: (str) The moon texture.
+        texture_8k: (str) An 8k version of texture.
+        obliquity: (float) The obliquity of the moon with respect to its orbital plane.
     """
 
     radius = 1737.4
@@ -274,6 +299,8 @@ class Moon:
     inclination = math.radians(5.145)
     name = 'moon'
     texture = Textures.moon
+    texture_8k = Textures.moon_8k
+    obliquity = math.radians(6.687)
 
     def __str__(self):
         return 'Moon'
@@ -284,7 +311,7 @@ class Mars:
     https://en.wikipedia.org/wiki/Mars
 
     Notes:
-        All orbital elements are in relation to orbit around the Sun.
+        All orbital elements and obliquity are in relation to orbit around the Sun.
         Inclination is in relation to the ecliptic, however.
 
     Class Variables:
@@ -302,6 +329,8 @@ class Mars:
         inclination: (float) The inclination of mars's orbit.
         name: (str) The lowercase of 'Mars'.
         texture: (str) The mars texture.
+        texture_8k: (str) An 8k version of texture.
+        obliquity: (float) The obliquity of mars with respect to its orbital plane.
     """
 
     radius = 3389.5
@@ -318,6 +347,8 @@ class Mars:
     inclination = math.radians(1.850)
     name = 'mars'
     texture = Textures.mars
+    texture_8k = Textures.mars_8k
+    obliquity = math.radians(25.19)
 
     def __str__(self):
         return 'Mars'
@@ -328,7 +359,7 @@ class Jupiter:
     https://en.wikipedia.org/wiki/Jupiter
 
     Notes:
-        All orbital elements are in relation to orbit around the Sun.
+        All orbital elements and obliquity are in relation to orbit around the Sun.
         Inclination is in relation to the ecliptic, however.
 
     Class Variables:
@@ -346,6 +377,8 @@ class Jupiter:
         inclination: (float) The inclination of jupiter's orbit.
         name: (str) The lowercase of 'Jupiter'.
         texture: (str) The jupiter texture.
+        texture_8k: (str) An 8k version of texture.
+        obliquity: (float) The obliquity of jupiter with respect to its orbital plane.
     """
 
     radius = 66911
@@ -362,6 +395,8 @@ class Jupiter:
     inclination = math.radians(1.303)
     name = 'jupiter'
     texture = Textures.jupiter
+    texture_8k = Textures.jupiter_8k
+    obliquity = math.radians(3.13)
 
     def __str__(self):
         return 'Jupiter'
@@ -372,7 +407,7 @@ class Saturn:
     https://en.wikipedia.org/wiki/Saturn
 
     Notes:
-        All orbital elements are in relation to orbit around the Sun.
+        All orbital elements and obliquity are in relation to orbit around the Sun.
         Inclination is in relation to the ecliptic, however.
 
     Class Variables:
@@ -390,6 +425,8 @@ class Saturn:
         inclination: (float) The inclination of saturn's orbit.
         name: (str) The lowercase of 'Saturn'.
         texture: (str) The saturn texture.
+        texture_8k: (str) An 8k version of texture.
+        obliquity: (float) The obliquity of saturn with respect to its orbital plane.
     """
 
     radius = 58232
@@ -406,6 +443,8 @@ class Saturn:
     inclination = math.radians(2.485)
     name = 'saturn'
     texture = Textures.saturn
+    texture_8k = Textures.saturn_8k
+    obliquity = math.radians(26.73)
 
     def __str__(self):
         return 'Saturn'
@@ -416,7 +455,7 @@ class Uranus:
     https://en.wikipedia.org/wiki/Uranus
 
     Notes:
-        All orbital elements are in relation to orbit around the Sun.
+        All orbital elements and obliquity are in relation to orbit around the Sun.
         Inclination is in relation to the ecliptic, however.
 
     Class Variables:
@@ -434,6 +473,7 @@ class Uranus:
         inclination: (float) The inclination of uranus's orbit.
         name: (str) The lowercase of 'Uranus'.
         texture: (str) The uranus texture.
+        obliquity: (float) The obliquity of uranus with respect to its orbital plane.
     """
 
     radius = 25362
@@ -450,6 +490,7 @@ class Uranus:
     inclination = math.radians(0.773)
     name = 'uranus'
     texture = Textures.uranus
+    obliquity = math.radians(97.77)
 
     def __str__(self):
         return 'Uranus'
@@ -460,7 +501,7 @@ class Neptune:
     https://en.wikipedia.org/wiki/Neptune
 
     Notes:
-        All orbital elements are in relation to orbit around the Sun.
+        All orbital elements and obliquity are in relation to orbit around the Sun.
         Inclination is in relation to the ecliptic, however.
 
     Class Variables:
@@ -478,6 +519,7 @@ class Neptune:
         inclination: (float) The inclination of neptune's orbit.
         name: (str) The lowercase of 'Neptune'.
         texture: (str) The neptune texture.
+        obliquity: (float) The obliquity of neptune with respect to its orbital plane.
     """
 
     radius = 24622
@@ -494,6 +536,7 @@ class Neptune:
     inclination = math.radians(1.767975)
     name = 'neptune'
     texture = Textures.neptune
+    obliquity = math.radians(28.32)
     
     def __str__(self):
         return 'Neptune'
