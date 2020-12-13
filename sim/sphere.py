@@ -1,7 +1,11 @@
-from orbits_GUI.vpython import sphere, simple_sphere, vector, color, textures, local_light, label
+import math
+import random as ran
+import numpy as np
+from vpython import sphere, simple_sphere, vector, color, textures, local_light, label, arrow
 from orbits_GUI.astro.params import gravity
 from orbits_GUI.astro.vectors import Elements
 from orbits_GUI.astro.maneuvers import Maneuver
+from orbits_GUI.astro.transf import rodrigues_rotation, rotate_y
 
 
 class Sphere(simple_sphere, sphere, Elements, Maneuver):
@@ -36,23 +40,30 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
         the maneuver; will need to add the appropriate instance attributes for the maneuver.
         preset: (params class) Some pre-made parameters class (contains radius, mass, rotational speed, etc)
         (default is None).
+        show_axes: (bool) If True, will display the cartesian axes and labels of the sphere;
+        can be removed and/or replaced afterwards using toggle_axes() (default is False).
+        obliquity: The angle of obliquity in radians (default is 0).
 
         The parameters from simple_sphere, sphere, Elements, and Maneuver are also available.
 
     Class Methods:
         label_text: The text for the VPython label; contains the name, primary, pos, vel, and mass.
         rotate: Rotates the Sphere about its axis.
-        delete: Deletes the Sphere and removes any lights, labels, and trails associated with the Sphere as well.
+        toggle_axes: Toggles on/off the cartesian axes of the sphere.
+        update_axes: Updates the positions of the axes and axes labels.
+        delete: Deletes the Sphere and removes any lights, labels, axes, and trails associated with the Sphere as well.
     """
 
-    light = None
-    label = None
+    _xaxis = vector(0, 0, 1)
+    _yaxis = vector(1, 0, 0)
+    _zaxis = vector(0, 1, 0)
+    _xarrow = _yarrow = _zarrow = light = label = None
     shininess = 0
-    up = vector(0,1,0)
+    up = _zaxis
 
     def __init__(self, vel=(0.0,0.0,0.0), mass=1.0, rotation_speed=0.0, name='Sphere', simple=False, massive=True,
                  labelled=False, primary=None, light_color='white', impulses=None, maneuver=None, preset=None,
-                 **kwargs):
+                 show_axes=False, obliquity=0, **kwargs):
         """
         :param pos: (tuple/VPython vector) Position of the sphere; if primary is given, will be w.r.t the primary
         (default is vector(0, 0, 0)).
@@ -75,6 +86,10 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
         the maneuver; will need to add the appropriate instance attributes for the maneuver.
         :param preset: (params class) Some pre-made parameters class (contains radius, mass, rotational speed, etc)
         (default is None).
+        :param show_axes: (bool) If True, will display the cartesian axes and labels of the sphere;
+        can be removed and/or replaced afterwards using toggle_axes() (default is False).
+        :param obliquity: The angle of obliquity in radians (default is 0).
+
 
         The parameters from simple_sphere, sphere, Elements, and Maneuver are also available.
         """
@@ -84,6 +99,7 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
         self.light_color = light_color
         self._labelled = labelled
         self.preset = preset
+        self.obliquity = obliquity
 
         # If a preset is given, uses preset attributes instead of the given attributes.
         if self.preset:
@@ -93,6 +109,12 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
             self.name = str(preset())
             kwargs['radius'] = preset.radius
             kwargs['texture'] = preset.texture
+            if isinstance(self.primary, Sphere):
+                self.obliquity = preset.obliquity
+                angles = np.arange(0, 2*math.pi, 0.05)
+                arbitrary_r = rotate_y(ran.choice(angles)).dot(np.array([self._xaxis.x, self._xaxis.y, self._xaxis.z]))
+                self.up = vector(*rodrigues_rotation(arbitrary_r, self.obliquity).
+                                 dot(np.array([self._zaxis.x, self._zaxis.y, self._zaxis.z])))
         else:
             self.mass = mass
             self.rotation_speed = rotation_speed
@@ -125,17 +147,18 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
                      'periapsis_angle', 'epoch_angle']
             elements = [kwargs.pop(elem) for elem in attrs if elem in keys]
             Elements.__init__(self, *elements, gravitational_parameter=self.primary.grav_parameter)
-            self._vel = self._velocity = self.velocity
-            kwargs['pos'] = self._position = self.position
+            self._vel = self._velocity = self.vpython_rotation(self.velocity)
+            kwargs['pos'] = self._position = self.vpython_rotation(self.position)
         else:
-            self._vel = self._velocity = self.__try_vector(vel)
+            self._vel = self._velocity = self.vpython_rotation(self.__try_vector(vel))
             if 'pos' in keys:
-                self._position = kwargs['pos'] = self.__try_vector(kwargs['pos'])
+                self._position = kwargs['pos'] = self.vpython_rotation(self.__try_vector(kwargs['pos']))
             else:
                 self._position = vector(0, 0, 0)
 
         # If primary is another Sphere, pos and vel are with respect to the primary;
-        # This will update pos and vel to be with respect to the origin of the VPython reference frame.
+        # This will update pos and vel to be with respect to the origin of the VPython reference frame and will
+        # set the z-axis (self.up) for the sphere.
         if isinstance(self.primary, Sphere):
             kwargs['pos'] = self._position + self.primary.pos
             self._vel = self._velocity + self.primary.vel
@@ -169,6 +192,10 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
             self.__make_light()
         if self._labelled:
             self.__make_label()
+
+        self.show_axes = show_axes
+        if self.show_axes:
+            self.__axes()
 
     def __str__(self):
         return self.name
@@ -234,18 +261,20 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
 
         pos = vector(round(self._position.x, places), round(self._position.y, places), round(self._position.z, places))
         vel = vector(round(self._velocity.x, places), round(self._velocity.y, places), round(self._velocity.z, places))
+        if self.mass > 1000:
+            m = '{:e}'.format(self.mass)
         name =     f'Name:     {self.name}'
         primary =  f'Primary:  {self.primary}'
         position = f'Position: {pos} km'
         velocity = f'Velocity: {vel} km/s'
-        mass =     f'Mass:     {self.mass} kg'
+        mass =     f'Mass:     {m} kg'
         return '\n'.join([name, primary, position, velocity, mass])
 
     def __make_label(self):
         self.label = label(text=self.label_text(), align='left', height=20,
-                           pixel_pos=True, pos=vector(20, self.canvas.height-80, 0), box=False)
+                           pixel_pos=True, pos=vector(20, self.canvas.height-100, 0), box=False)
 
-    def rotate(self, angle=None, axis=up, origin=None):
+    def rotate(self, angle=None, axis=None, origin=None):
         """ Rotates the Sphere about its axis.
 
         :param angle: (float) The amount of desired rotation in radians (default is None).
@@ -253,12 +282,49 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
         :param origin: (VPython vector) The rotation is relative to the origin; if None, its self.pos (default is None).
         """
 
-        super(Sphere, self).rotate(angle=angle, axis=axis, origin=origin)
+        if not axis:
+            a = self.up
+        else:
+            a = axis
+        super(Sphere, self).rotate(angle=angle, axis=a, origin=origin)
+
+    def __axes(self):
+        arrows = {'pos': self.pos, 'length': 1.5*self.radius, 'shaftwidth': self.radius/100,
+                  'headwidth': self.radius/30, 'headlength': self.radius/30, 'color': color.red}
+        self._xarrow = arrow(axis=self._xaxis, **arrows)
+        self._yarrow = arrow(axis=self._yaxis, **arrows)
+        self._zarrow = arrow(axis=self._zaxis, **arrows)
+
+        labels = {'box': False, 'opacity': 0}
+        self._xarrow_label = label(text='X', pos=self.pos+self._xarrow.axis, **labels)
+        self._yarrow_label = label(text='Y', pos=self.pos+self._yarrow.axis, **labels)
+        self._zarrow_label = label(text='Z', pos=self.pos+self._zarrow.axis, **labels)
+
+    def toggle_axes(self):
+        if self.show_axes:
+            self._xarrow.visible = self._yarrow.visible = self._zarrow.visible = self.show_axes = \
+                self._xarrow_label.visible = self._yarrow_label.visible = self._zarrow_label.visible = False
+            del self._xarrow, self._yarrow, self._zarrow, self._xarrow_label, self._yarrow_label, self._zarrow_label
+        else:
+            if not all([self._xarrow, self._yarrow, self._zarrow]):
+                self.__axes()
+            else:
+                self._xarrow.visible = self._yarrow.visible = self._zarrow.visible = \
+                    self._xarrow_label.visible = self._yarrow_label.visible = self._zarrow_label.visible = True
+            self.show_axes = True
+
+    def update_axes(self):
+        self._xarrow.pos = self._yarrow.pos = self._zarrow.pos = self.pos
+        self._xarrow_label.pos = self.pos+self._xarrow.axis
+        self._yarrow_label.pos = self.pos+self._yarrow.axis
+        self._zarrow_label.pos = self.pos+self._zarrow.axis
 
     def delete(self):
-        """ Deletes the Sphere and removes any lights, labels, and trails associated with the Sphere as well. """
+        """ Deletes the Sphere and removes any lights, labels, axes, and trails associated with the Sphere as well. """
 
         self.visible = self.luminous = self.labelled = False
+        if self.show_axes:
+            self.toggle_axes()
         self.clear_trail()
         self.__del__()
 
@@ -268,3 +334,7 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
             return vector(*vect)
         except TypeError:
             return vect
+
+    @staticmethod
+    def vpython_rotation(v):
+        return vector(v.y, v.z, v.x)

@@ -1,7 +1,7 @@
 import numpy as np
 import datetime
 import pyautogui
-from orbits_GUI.vpython import vector, canvas, rate, mag, label, norm
+from vpython import vector, canvas, rate, mag, label, norm
 from orbits_GUI.sim.controls import Controls
 from orbits_GUI.astro.transf import rodrigues_rotation
 from orbits_GUI.astro.rfunc import decimal_length, round_to_place, integer_length
@@ -19,8 +19,13 @@ class Simulate:
 
     _gravity = _scene = _spheres = _massives = _time_stamp = _time = _dt = _frame_rate = _controls = None
     _screen_width, _screen_height = pyautogui.size()
-    _build_height = _screen_height - 400
-    _simulate_height = _screen_height - 250
+
+    def __init__(self):
+        self.__set_scene()
+        self._controls = self.__set_controls()
+        while True:
+            self.__build_scenario()
+            self.__simulate_scenario()
 
     def __universal_gravitation(self, sphere_one, sphere_two):
         """ Uses Newton's Law of Universal Gravitation to find the force of gravity on
@@ -64,6 +69,9 @@ class Simulate:
 
             if sph.labelled:
                 sph.label.text = sph.label_text()
+
+            if sph.show_axes:
+                sph.update_axes()
 
     def __apply_impulse(self, sphere):
         """ Applies an impulse to the desired sphere. To be used in __update_spheres(). """
@@ -117,7 +125,7 @@ class Simulate:
     def __build_scenario(self):
         """ The scenario building phase of the simulation. """
 
-        self._scene.height = self._build_height
+        self._scene.height = self._screen_height - self._controls.scene_height_sub
 
         if self._time_stamp:
             self._time_stamp.visible = False
@@ -130,27 +138,31 @@ class Simulate:
     def __simulate_scenario(self):
         """ Simulates the given scenario. """
 
-        self._scene.height = self._simulate_height
+        self._scene.height = self._screen_height - self._controls.scene_height_sub
 
         if self._controls.start_time == 'now':
-            self._start_time = datetime.datetime.now()
+            self._start_time = datetime.datetime.utcnow()
             self._start_time -= datetime.timedelta(microseconds=self._start_time.microsecond)
         else:
             self._start_time = self._controls.start_time
 
         self._time = self._start_time
-        self._time_stamp = label(text=f'{self._time.date()}\n{self._time.time()}', align='left', height=20,
-                                 pixel_pos=True, pos=vector(20, self._scene.height-28, 0), box=False)
+        self._time_stamp = label(text=f'Date (UTC):     {self._time.date()}\nTime (UTC):     {self._time.time()}',
+                                 align='left', height=20, pixel_pos=True, pos=vector(20, self._scene.height-28, 0),
+                                 box=False)
 
         while self._controls.scenario_running:
             self._spheres = self._controls.spheres
             self._dt = self._controls.dt
+            if self._scene.height != self._screen_height - self._controls.scene_height_sub:
+                self._scene.height = self._screen_height - self._controls.scene_height_sub
+                self._time_stamp.pos = vector(20, self._scene.height-28, 0)
             rate(self._controls.frame_rate)
             if self._controls.running:
                 self._massives = [sph for sph in self._spheres if sph.massive]
                 self.__update_spheres()
                 self._time += datetime.timedelta(seconds=self._dt)
-                self._time_stamp.text = f'Date:     {self._time.date()}\nTime:     {self._time.time()}'
+                self._time_stamp.text = f'Date (UTC):     {self._time.date()}\nTime (UTC):     {self._time.time()}'
 
     def __set_controls(self):
         """ Sets the controls for the GUI. """
@@ -161,16 +173,7 @@ class Simulate:
         return cont
 
     def __set_scene(self):
-        self._scene = canvas(width=self._screen_width-20, height=self._build_height)
+        self._scene = canvas(width=self._screen_width-20)
         self._scene.lights[1].visible = False
         self._scene.lights.pop(1)
         #self._scene.resizable = False
-
-    def start(self):
-        """ Starts the simulation program. """
-
-        self.__set_scene()
-        self._controls = self.__set_controls()
-        while True:
-            self.__build_scenario()
-            self.__simulate_scenario()
