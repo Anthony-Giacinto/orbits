@@ -12,6 +12,8 @@ This project allows the user to simulate the trajectories of objects in space us
 ## General Info
 
 ## Screenshot
+Screenshot of over 2700 satellites orbiting Earth using real satellite data.
+![satellites](/files/screenshots/satellites.PNG)
 
 ## Technologies
 Project was created with:
