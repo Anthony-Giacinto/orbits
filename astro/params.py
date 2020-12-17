@@ -100,7 +100,8 @@ class Sun:
         mass: (float) The mass of the sun.
         angular_rotation: (float) The angular speed of the sun about its axis.
         gravitational_parameter: (float) The gravitational parameter of the sun.
-        same: (str) The lowercase of 'Sun'.
+        name: (str) The lowercase of 'Sun'.
+        classname: (str) Name, but capitalized for string representation.
         texture: (str) The sun texture.
     """
 
@@ -110,10 +111,11 @@ class Sun:
     angular_rotation = 2*math.pi/sidereal_rotation_period
     gravitational_parameter = 1.32712440018e11
     name = 'sun'
+    classname = name[0].upper() + name[1:]
     texture = Textures.sun
 
     def __str__(self):
-        return 'Sun'
+        return self.classname
 
 
 class Mercury:
@@ -136,6 +138,7 @@ class Mercury:
         semi_latus_rectum: (float) The semilatus rectum of mercury's orbit.
         inclination: (float) The inclination of mercury's orbit.
         name: (str) The lowercase of 'Mercury'.
+        classname: (str) Name, but capitalized for string representation.
         texture: (str) The mercury texture.
         texture_8k: (str) An 8k version of texture.
         obliquity: (float) The obliquity of mercury with respect to its orbital plane.
@@ -152,12 +155,13 @@ class Mercury:
     semi_latus_rectum = semi_major_axis*(1 - eccentricity**2)
     inclination = math.radians(7.005)
     name = 'mercury'
+    classname = name[0].upper() + name[1:]
     texture = Textures.mercury
     texture_8k = Textures.mercury_8k
     obliquity = math.radians(0.034)
 
     def __str__(self):
-        return 'Mercury'
+        return self.classname
 
 
 class Venus:
@@ -180,6 +184,7 @@ class Venus:
         semi_latus_rectum: (float) The semilatus rectum of venus's orbit.
         inclination: (float) The inclination of venus's orbit.
         name: (str) The lowercase of 'Venus'.
+        classname: (str) Name, but capitalized for string representation.
         texture: (str) The venus texture.
         texture_4k: (str) A 4k version of texture.
         texture_surf: (str) The venus surface texture.
@@ -198,6 +203,7 @@ class Venus:
     semi_latus_rectum = semi_major_axis*(1 - eccentricity**2)
     inclination = math.radians(3.39458)
     name = 'venus'
+    classname = name[0].upper() + name[1:]
     texture = Textures.venus
     texture_4k = Textures.venus_4k
     texture_surface = Textures.venus_surf
@@ -205,7 +211,7 @@ class Venus:
     obliqutiy = math.radians(177.36)
 
     def __str__(self):
-        return 'Venus'
+        return self.classname
 
 
 class Earth:
@@ -231,6 +237,7 @@ class Earth:
         inclination: (float) The inclination of earth's orbit.
         ellipsoid_eccentricity: (float) The eccentricity of the equatorial cross section of an ellipsoidal Earth model.
         name: (str) The lowercase of 'Earth'.
+        classname: (str) Name, but capitalized for string representation.
         texture: (str) The earth texture.
         texture_8k: (str) An 8k version of texture.
         obliquity: (float) The obliquity of earth with respect to its orbital plane.
@@ -250,12 +257,13 @@ class Earth:
     inclination = math.radians(5e-5)
     ellipsoid_eccentricity = 0.08182
     name = 'earth'
+    classname = name[0].upper() + name[1:]
     texture = Textures.earth
     texture_8k = Textures.earth_8k
     obliquity = math.radians(23.4392811)
 
     def __str__(self):
-        return 'Earth'
+        return self.classname
 
 
 class Moon:
@@ -280,6 +288,7 @@ class Moon:
         semi_latus_rectum: (float) The semilatus rectum of the moon's orbit.
         inclination: (float) The inclination of the moon's orbit.
         name: (str) The lowercase of 'Moon'.
+        classname: (str) Name, but capitalized for string representation.
         texture: (str) The moon texture.
         texture_8k: (str) An 8k version of texture.
         obliquity: (float) The obliquity of the moon with respect to its orbital plane.
@@ -298,12 +307,13 @@ class Moon:
     semi_latus_rectum = semi_major_axis*(1-eccentricity**2)
     inclination = math.radians(5.145)
     name = 'moon'
+    classname = name[0].upper() + name[1:]
     texture = Textures.moon
     texture_8k = Textures.moon_8k
     obliquity = math.radians(6.687)
 
     def __str__(self):
-        return 'Moon'
+        return self.classname
 
 
 class Mars:
@@ -328,6 +338,7 @@ class Mars:
         semi_latus_rectum: (float) The semilatus rectum of mars's orbit.
         inclination: (float) The inclination of mars's orbit.
         name: (str) The lowercase of 'Mars'.
+        classname: (str) Name, but capitalized for string representation.
         texture: (str) The mars texture.
         texture_8k: (str) An 8k version of texture.
         obliquity: (float) The obliquity of mars with respect to its orbital plane.
@@ -346,12 +357,13 @@ class Mars:
     semi_latus_rectum = semi_major_axis*(1-eccentricity**2)
     inclination = math.radians(1.850)
     name = 'mars'
+    classname = name[0].upper() + name[1:]
     texture = Textures.mars
     texture_8k = Textures.mars_8k
     obliquity = math.radians(25.19)
 
     def __str__(self):
-        return 'Mars'
+        return self.classname
 
 
 class Jupiter:
@@ -376,6 +388,7 @@ class Jupiter:
         semi_latus_rectum: (float) The semilatus rectum of jupiter's orbit.
         inclination: (float) The inclination of jupiter's orbit.
         name: (str) The lowercase of 'Jupiter'.
+        classname: (str) Name, but capitalized for string representation.
         texture: (str) The jupiter texture.
         texture_8k: (str) An 8k version of texture.
         obliquity: (float) The obliquity of jupiter with respect to its orbital plane.
@@ -394,12 +407,13 @@ class Jupiter:
     semi_latus_rectum = semi_major_axis*(1-eccentricity**2)
     inclination = math.radians(1.303)
     name = 'jupiter'
+    classname = name[0].upper() + name[1:]
     texture = Textures.jupiter
     texture_8k = Textures.jupiter_8k
     obliquity = math.radians(3.13)
 
     def __str__(self):
-        return 'Jupiter'
+        return self.classname
 
 
 class Saturn:
@@ -424,6 +438,7 @@ class Saturn:
         semi_latus_rectum: (float) The semilatus rectum of saturn's orbit.
         inclination: (float) The inclination of saturn's orbit.
         name: (str) The lowercase of 'Saturn'.
+        classname: (str) Name, but capitalized for string representation.
         texture: (str) The saturn texture.
         texture_8k: (str) An 8k version of texture.
         obliquity: (float) The obliquity of saturn with respect to its orbital plane.
@@ -442,12 +457,13 @@ class Saturn:
     semi_latus_rectum = semi_major_axis*(1-eccentricity**2)
     inclination = math.radians(2.485)
     name = 'saturn'
+    classname = name[0].upper() + name[1:]
     texture = Textures.saturn
     texture_8k = Textures.saturn_8k
     obliquity = math.radians(26.73)
 
     def __str__(self):
-        return 'Saturn'
+        return self.classname
 
 
 class Uranus:
@@ -472,6 +488,7 @@ class Uranus:
         semi_latus_rectum: (float) The semilatus rectum of uranus's orbit.
         inclination: (float) The inclination of uranus's orbit.
         name: (str) The lowercase of 'Uranus'.
+        classname: (str) Name, but capitalized for string representation.
         texture: (str) The uranus texture.
         obliquity: (float) The obliquity of uranus with respect to its orbital plane.
     """
@@ -489,11 +506,12 @@ class Uranus:
     semi_latus_rectum = semi_major_axis*(1-eccentricity**2)
     inclination = math.radians(0.773)
     name = 'uranus'
+    classname = name[0].upper() + name[1:]
     texture = Textures.uranus
     obliquity = math.radians(97.77)
 
     def __str__(self):
-        return 'Uranus'
+        return self.classname
 
 
 class Neptune:
@@ -518,6 +536,7 @@ class Neptune:
         semi_latus_rectum: (float) The semilatus rectum of neptune's orbit.
         inclination: (float) The inclination of neptune's orbit.
         name: (str) The lowercase of 'Neptune'.
+        classname: (str) Name, but capitalized for string representation.
         texture: (str) The neptune texture.
         obliquity: (float) The obliquity of neptune with respect to its orbital plane.
     """
@@ -535,8 +554,9 @@ class Neptune:
     semi_latus_rectum = semi_major_axis*(1-eccentricity**2)
     inclination = math.radians(1.767975)
     name = 'neptune'
+    classname = name[0].upper() + name[1:]
     texture = Textures.neptune
     obliquity = math.radians(28.32)
     
     def __str__(self):
-        return 'Neptune'
+        return self.classname

@@ -78,6 +78,10 @@ class Hohmann:
     """ Describes a hohmann transfer (the minimum change in speed required for a transfer between two
     circular coplanar orbits using two impulses).
 
+    Class Attributes:
+        classname: (str) A string representation of the class.
+        attrs: (list(str)) A list of attribute names.
+
     Instance Attributes:
         initial_radius: (float) The radius of the initial circular orbit.
         final_radius: (float) The radius of the final circular orbit.
@@ -91,6 +95,7 @@ class Hohmann:
         impulses: (tuple(tuples)) The impulse instructions ((time, delta v, burn angle), ...).
     """
 
+    classname = 'Hohmann Transfer'
     attrs = ['initial_radius', 'final_radius', 'gravitational_parameter', 'start_time']
 
     def __init__(self, initial_radius=0.0, final_radius=0.0, gravitational_parameter=0.0, start_time=0.0):
@@ -107,6 +112,9 @@ class Hohmann:
         self.start_time = start_time
         self._semi_major_axis_transfer = semi_major_axis(radii=True, radius_one=self.initial_radius,
                                                          radius_two=self.final_radius)
+
+    def __str__(self):
+        return self.classname
 
     def __delta_v(self, radius):
         _delta_v = delta_v(radius, self._semi_major_axis_transfer, self.gravitational_parameter)
@@ -143,6 +151,10 @@ class Hohmann:
 class BiElliptic:
     """ Describes a bi-elliptic transfer (transfer between two circular coplanar orbits using three impulses).
 
+    Class Attributes:
+        classname: (str) A string representation of the class.
+        attrs: (list(str)) A list of attribute names.
+
     Instance Attributes:
         initial_radius: (float) The radius of the initial circular orbit.
         final_radius: (float) The radius of the final circular orbit.
@@ -159,6 +171,7 @@ class BiElliptic:
         impulses: (tuple(tuples)) The impulse instructions ((time, delta v, burn angle), ...).
     """
 
+    classname = 'Bi-Elliptic Transfer'
     attrs = ['initial_radius', 'final_radius', 'gravitational_parameter', 'transfer_apoapsis', 'start_time']
 
     def __init__(self, initial_radius=0.0, final_radius=0.0, gravitational_parameter=0.0, transfer_apoapsis=0.0,
@@ -180,6 +193,9 @@ class BiElliptic:
                                                     radius_two=self.transfer_apoapsis)
         self._semi_major_axis_two = semi_major_axis(radii=True, radius_one=self.final_radius,
                                                     radius_two=self.transfer_apoapsis)
+
+    def __str__(self):
+        return self.classname
 
     @property
     def delta_v_1(self):
@@ -228,6 +244,10 @@ class BiElliptic:
 class GeneralTransfer:
     """ Describes a general transfer between two circular coplanar orbits along with the required burn angles.
 
+    Class Attributes:
+        classname: (str) A string representation of the class.
+        attrs: (list(str)) A list of attribute names.
+
     Instance Attributes:
         initial_radius: (float) The radius of the initial circular orbit.
         final_radius: (float) The radius of the final circular orbit.
@@ -244,6 +264,7 @@ class GeneralTransfer:
         impulses: (tuple(tuples)) The impulse instructions ((time, delta v, burn angle), ...).
     """
 
+    classname = 'General Transfer'
     attrs = ['initial_radius', 'final_radius', 'gravitational_parameter', 'transfer_eccentricity', 'start_time']
 
     def __init__(self, initial_radius=0.0, final_radius=0.0, gravitational_parameter=0.0, transfer_eccentricity=0.0,
@@ -275,6 +296,9 @@ class GeneralTransfer:
         self._initial_speed_transfer = vis_viva(self.initial_radius, a, self.gravitational_parameter)
         self._final_speed_transfer = vis_viva(self.final_radius, a, self.gravitational_parameter)
         self._final_speed_circular = circular_speed(self.final_radius, self.gravitational_parameter)
+
+    def __str__(self):
+        return self.classname
 
     @staticmethod
     def __delta_v(circle_speed, transfer_speed, radius, momentum):
@@ -347,6 +371,10 @@ class GeneralTransfer:
 class SimplePlaneChange:
     """ Describes a simple plane change between two circular orbits with no change in speed along with the burn angle.
 
+    Class Attributes:
+        classname: (str) A string representation of the class.
+        attrs: (list(str)) A list of attribute names.
+
     Instance Attributes:
         radius: (float) The radius of the circular orbit.
         inclination_change: (float) The angle between the current orbit and the desired orbit in radians.
@@ -359,6 +387,7 @@ class SimplePlaneChange:
         impulses: (tuple) The impulse instructions (time, delta v, burn angle).
     """
 
+    classname = 'Simple Plane Change'
     attrs = ['initial_radius', 'final_radius', 'inclination_change', 'gravitational_parameter', 'start_time']
 
     def __init__(self, initial_radius=0.0, inclination_change=0.0, gravitational_parameter=0.0, start_time=0.0):
@@ -374,6 +403,9 @@ class SimplePlaneChange:
         self.gravitational_parameter = gravitational_parameter
         self.start_time = start_time
         self._speed = circular_speed(self.initial_radius, self.gravitational_parameter)
+
+    def __str__(self):
+        return self.classname
 
     @property
     def delta_v(self):
