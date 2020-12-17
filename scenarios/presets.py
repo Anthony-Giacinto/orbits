@@ -180,23 +180,3 @@ def earth_moon(show_axes=False):
     moon = Sphere(pos=vectors.position, vel=vectors.velocity, preset=Moon, primary=earth, make_trail=True, retain=500)
     moon.rotate(angle=-theta)
     return earth, moon
-
-
-# def sun_venus(show_axes=False):
-#     sun = Sphere(preset=Sun, show_axes=show_axes, simple=True)
-#     loan, pa, ea = random_element_angles(1)
-#     vectors = Elements(semi_latus_rectum=Venus.semi_latus_rectum, eccentricity=Venus.eccentricity,
-#                        inclination=Venus.inclination, longitude_of_ascending_node=loan[0], periapsis_angle=pa[0],
-#                        epoch_angle=ea[0])
-#     venus = Sphere(pos=vectors.position, vel=vectors.velocity, preset=Venus, make_trail=True, trail_limit=50, simple=True)
-#     return sun, venus
-#
-#
-# def sun_uranus(show_axes=False):
-#     sun = Sphere(mass=Sun.mass, grav_parameter=Sun.gravitational_parameter, show_axes=show_axes, simple=True)
-#     loan, pa, ea = random_element_angles(1)
-#     vectors = Elements(semi_latus_rectum=Uranus.semi_latus_rectum, eccentricity=Uranus.eccentricity,
-#                        inclination=Uranus.inclination, longitude_of_ascending_node=loan[0], periapsis_angle=pa[0],
-#                        epoch_angle=ea[0])
-#     uranus = Sphere(pos=vectors.position, vel=vectors.velocity, preset=Uranus, make_trail=True, trail_limit=50, simple=True)
-#     return sun, uranus
