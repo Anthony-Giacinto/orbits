@@ -30,5 +30,7 @@ Project was created with:
 ## Examples
 
 ## How to Use
-1. On first use, must copy the .../files/images folder into the VPython package folder .../Lib/site-packages/vpython/vpython_data and then copy everything else from .../files and copy them into .../Lib/site-packages/vpython/vpython_libraries to replace the default files.
+1. On first use must,
+  a) copy the .../files/images folder and place in the VPython package folder .../Lib/site-packages/vpython/vpython_data 
+  b) copy everything else from .../files and place them in .../Lib/site-packages/vpython/vpython_libraries to replace the default files.
 2.
