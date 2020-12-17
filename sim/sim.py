@@ -1,6 +1,6 @@
-import numpy as np
 import datetime
 import pyautogui
+import numpy as np
 from vpython import vector, canvas, rate, mag, label, norm
 from orbits_GUI.sim.controls import Controls
 from orbits_GUI.astro.transf import rodrigues_rotation
@@ -9,20 +9,18 @@ from orbits_GUI.astro.maneuvers import Hohmann, BiElliptic, GeneralTransfer, Sim
 
 
 class Simulate:
-    """ Simulates a system of orbiting spheres within VPython using Newton's Law of Universal Gravitation
-    with given starting positions, starting velocities, and masses. Perturbations in orbits from surrounding massive
-    bodies are accounted for in the motion of the spheres.
+    """ Simulates a system of orbiting spheres within VPython using Newton's Law of Universal Gravitation. """
 
-    Methods:
-        start: Starts the simulation program.
-    """
-
-    _gravity = _scene = _spheres = _massives = _time_stamp = _time = _dt = _frame_rate = _controls = None
+    _time_stamp = None
     _screen_width, _screen_height = pyautogui.size()
 
     def __init__(self):
-        self.__set_scene()
-        self._controls = self.__set_controls()
+        self._scene = canvas(width=self._screen_width-20)
+        self._scene.lights[1].visible = False
+        self._scene.lights.pop(1)
+        #self._scene.resizable = False
+        self._controls = Controls(self._scene)
+        self._gravity = self._controls.gravity
         while True:
             self.__build_scenario()
             self.__simulate_scenario()
@@ -67,12 +65,6 @@ class Simulate:
             if sph.rotation_speed:
                 sph.rotate(angle=sph.rotation_speed*self._dt)
 
-            if sph.labelled:
-                sph.label.text = sph.label_text()
-
-            if sph.show_axes:
-                sph.update_axes()
-
     def __apply_impulse(self, sphere):
         """ Applies an impulse to the desired sphere. To be used in __update_spheres(). """
 
@@ -83,12 +75,10 @@ class Simulate:
             seconds2 = time_delta2.total_seconds()
 
             if self._dt < 0:
-                places = decimal_length(self._dt)
-                round(seconds2, places)
+                round(seconds2, decimal_length(self._dt))
             elif self._dt > 0:
-                # A value of 10.1 would be rounded to the nearest 10 value (ignores the decimal places).
-                places = integer_length(self._dt)
-                seconds2 = round_to_place(seconds2, places + 1)
+                # A value of 10.1 would be rounded to the nearest 10's value (ignores the decimal places).
+                seconds2 = round_to_place(seconds2, integer_length(self._dt) + 1)
 
             if seconds1 == seconds2:
 
@@ -147,33 +137,20 @@ class Simulate:
             self._start_time = self._controls.start_time
 
         self._time = self._start_time
-        self._time_stamp = label(text=f'Date (UTC):     {self._time.date()}\nTime (UTC):     {self._time.time()}',
-                                 align='left', height=20, pixel_pos=True, pos=vector(20, self._scene.height-28, 0),
-                                 box=False)
+        self._time_stamp = label(text=f'Datetime: {self._time} UTC', align='left', height=20, pixel_pos=True, box=False,
+                                 pos=vector(20, self._scene.height-28, 0))
 
         while self._controls.scenario_running:
             self._spheres = self._controls.spheres
             self._dt = self._controls.dt
+
             if self._scene.height != self._screen_height - self._controls.scene_height_sub:
                 self._scene.height = self._screen_height - self._controls.scene_height_sub
                 self._time_stamp.pos = vector(20, self._scene.height-28, 0)
+
             rate(self._controls.frame_rate)
             if self._controls.running:
                 self._massives = [sph for sph in self._spheres if sph.massive]
                 self.__update_spheres()
                 self._time += datetime.timedelta(seconds=self._dt)
-                self._time_stamp.text = f'Date (UTC):     {self._time.date()}\nTime (UTC):     {self._time.time()}'
-
-    def __set_controls(self):
-        """ Sets the controls for the GUI. """
-
-        cont = Controls(self._scene)
-        cont.set_controls()
-        self._gravity = cont.gravity
-        return cont
-
-    def __set_scene(self):
-        self._scene = canvas(width=self._screen_width-20)
-        self._scene.lights[1].visible = False
-        self._scene.lights.pop(1)
-        #self._scene.resizable = False
+                self._time_stamp.text = f'Datetime: {self._time} UTC'

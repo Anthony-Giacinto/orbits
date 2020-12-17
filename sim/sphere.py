@@ -47,10 +47,8 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
         The parameters from simple_sphere, sphere, Elements, and Maneuver are also available.
 
     Class Methods:
-        label_text: The text for the VPython label; contains the name, primary, pos, vel, and mass.
         rotate: Rotates the Sphere about its axis.
         toggle_axes: Toggles on/off the cartesian axes of the sphere.
-        update_axes: Updates the positions of the axes and axes labels.
         delete: Deletes the Sphere and removes any lights, labels, axes, and trails associated with the Sphere as well.
     """
 
@@ -62,8 +60,8 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
     up = _zaxis
 
     def __init__(self, vel=(0.0,0.0,0.0), mass=1.0, rotation_speed=0.0, name='Sphere', simple=False, massive=True,
-                 labelled=False, primary=None, light_color='white', impulses=None, maneuver=None, preset=None,
-                 show_axes=False, obliquity=0, **kwargs):
+                 labelled=False, luminous=False, primary=None, light_color='white', impulses=None, maneuver=None,
+                 preset=None, show_axes=False, obliquity=0, **kwargs):
         """
         :param pos: (tuple/VPython vector) Position of the sphere; if primary is given, will be w.r.t the primary
         (default is vector(0, 0, 0)).
@@ -187,7 +185,7 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
             self._type = 'sphere'
             sphere.__init__(self, **kwargs)
 
-        self._luminous = self.emissive
+        self._luminous = self.emissive = luminous
         if self._luminous:
             self.__make_light()
         if self._labelled:
@@ -207,6 +205,10 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
     def pos(self, value):
         val = self.__try_vector(value)
         self._pos = self._position = val
+        if self.show_axes:
+            self.__update_axes()
+        if self.labelled:
+            self.label.text = self.__label_text()
         if self.light:
             self.light.pos = val
         if not self._constructing:
@@ -221,6 +223,8 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
     @vel.setter
     def vel(self, value):
         self._vel = self._velocity = self.__try_vector(value)
+        if self.labelled:
+            self.label.text = self.__label_text()
 
     @property
     def luminous(self):
@@ -252,28 +256,6 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
             del self.label
             self.label = None
 
-    def label_text(self, places=3):
-        """ The text for the VPython label; contains the name, primary, pos, vel, and mass.
-
-        :param places: (int) The number of decimal places for pos and vel (default is 3).
-        :return: (str) The label text.
-        """
-
-        pos = vector(round(self._position.x, places), round(self._position.y, places), round(self._position.z, places))
-        vel = vector(round(self._velocity.x, places), round(self._velocity.y, places), round(self._velocity.z, places))
-        if self.mass > 1000:
-            m = '{:e}'.format(self.mass)
-        name =     f'Name:     {self.name}'
-        primary =  f'Primary:  {self.primary}'
-        position = f'Position: {pos} km'
-        velocity = f'Velocity: {vel} km/s'
-        mass =     f'Mass:     {m} kg'
-        return '\n'.join([name, primary, position, velocity, mass])
-
-    def __make_label(self):
-        self.label = label(text=self.label_text(), align='left', height=20,
-                           pixel_pos=True, pos=vector(20, self.canvas.height-100, 0), box=False)
-
     def rotate(self, angle=None, axis=None, origin=None):
         """ Rotates the Sphere about its axis.
 
@@ -288,6 +270,30 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
             a = axis
         super(Sphere, self).rotate(angle=angle, axis=a, origin=origin)
 
+    def __label_text(self, places=3):
+        """ The text for the VPython label; contains the name, primary, pos, vel, and mass.
+
+        :param places: (int) The number of decimal places for pos and vel (default is 3).
+        :return: (str) The label text.
+        """
+
+        pos = vector(round(self._position.x, places), round(self._position.y, places), round(self._position.z, places))
+        vel = vector(round(self._velocity.x, places), round(self._velocity.y, places), round(self._velocity.z, places))
+        if self.mass > 1000:
+            m = '{:e}'.format(self.mass)
+        else:
+            m = self.mass
+        name =     f'Name:      {self.name}'
+        primary =  f'Primary:   {self.primary}'
+        position = f'Position:  {pos} km'
+        velocity = f'Velocity:  {vel} km/s'
+        mass =     f'Mass:      {m} kg'
+        return '\n'.join([name, primary, position, velocity, mass])
+
+    def __make_label(self):
+        self.label = label(text=self.__label_text(), align='left', height=20,
+                           pixel_pos=True, pos=vector(20, self.canvas.height-100, 0), box=False)
+
     def __axes(self):
         arrows = {'pos': self.pos, 'length': 1.5*self.radius, 'shaftwidth': self.radius/100,
                   'headwidth': self.radius/30, 'headlength': self.radius/30, 'color': color.red}
@@ -299,6 +305,12 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
         self._xarrow_label = label(text='X', pos=self.pos+self._xarrow.axis, **labels)
         self._yarrow_label = label(text='Y', pos=self.pos+self._yarrow.axis, **labels)
         self._zarrow_label = label(text='Z', pos=self.pos+self._zarrow.axis, **labels)
+
+    def __update_axes(self):
+        self._xarrow.pos = self._yarrow.pos = self._zarrow.pos = self.pos
+        self._xarrow_label.pos = self.pos+self._xarrow.axis
+        self._yarrow_label.pos = self.pos+self._yarrow.axis
+        self._zarrow_label.pos = self.pos+self._zarrow.axis
 
     def toggle_axes(self):
         if self.show_axes:
@@ -312,12 +324,6 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
                 self._xarrow.visible = self._yarrow.visible = self._zarrow.visible = \
                     self._xarrow_label.visible = self._yarrow_label.visible = self._zarrow_label.visible = True
             self.show_axes = True
-
-    def update_axes(self):
-        self._xarrow.pos = self._yarrow.pos = self._zarrow.pos = self.pos
-        self._xarrow_label.pos = self.pos+self._xarrow.axis
-        self._yarrow_label.pos = self.pos+self._yarrow.axis
-        self._zarrow_label.pos = self.pos+self._zarrow.axis
 
     def delete(self):
         """ Deletes the Sphere and removes any lights, labels, axes, and trails associated with the Sphere as well. """
