@@ -38,4 +38,4 @@ Project was created with:
 ## How to Use
 * Run Scenario / End Scenario: Starts and ends the simulation.
 * Pause / Play: Pauses and plays the simulation after it has begun.
-* &#21BA
+* Reset: Resets the UI back to the start up UI.
