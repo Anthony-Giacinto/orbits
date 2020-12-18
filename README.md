@@ -6,6 +6,7 @@ This project allows the user to simulate the trajectories of objects in space us
 * [Screenshot](#screenshot)
 * [Technologies](#technologies)
 * [Features](#features)
+* [Widgets](#widgets)
 * [How to Use](#how-to-use)
 
 ## General Info
@@ -16,6 +17,7 @@ This project allows the user to simulate the trajectories of objects in space us
 
         import orbits_GUI as orb  
         orb.Simulate()
+* To exit, just close the browser window.
 
 ## Screenshot
 Screenshot of over 2600 satellites orbiting Earth using real satellite data.
@@ -35,7 +37,7 @@ Project was created with:
 * Can determine the position and velocity vectors of an orbiting object (Geocentric-Equatorial frame) from given classical orbit elements and vice versa.
 * Deals with orbit perturbations by using Cowell's method.
 
-## How to Use
+## Widgets
 * Run Scenario / End Scenario Button: Starts and ends the simulation.
 * Pause / Play Button: Pauses and plays the simulation after it has begun.
 * Reset Button: Resets the UI back to the start up UI.
@@ -48,3 +50,7 @@ Project was created with:
 * Scenario Menu: Will build the chosen scenario from the menu, or will allow you to create your own scenario.
 * Body Menu: Allows you to place objects into the scenario. Can choose from some preset planets or can create your own object.
 * Toggle Axes: Toggles on/off cartesian axes on the primary body in the scenario.
+
+## How to Use
+* Choose a scenario
+![choose_scenario](/files/screenshots/choose_scenario.png)
