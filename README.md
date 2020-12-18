@@ -51,7 +51,7 @@ Project was created with:
 ## Widgets
 * Run Scenario / End Scenario Button: Starts and ends the simulation.
 * Pause / Play Button: Pauses and plays the simulation after it has begun.
-* Reset Button: Resets the UI back to the start up UI.
+* Reset Button: Resets the GUI back to the start up GUI.
 * Following Input: Enter the name of the object that you want the camera to focus on.
 * Time Step Input: The amount of time that passes between each new position determination in seconds. The smaller the value the more accurate the simulate will be. Cannot be larger than the Time Rate value (default value is 1.0 s).
 * Time Rate Input: The amount of simulation time that passes every Time Step in chosen units per Time Step. Increase this value to increase the rate of simulation time. Cannot be smaller than the Time Step value (default value is 1 second / Time Step).
