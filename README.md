@@ -15,11 +15,11 @@ This project allows the user to simulate the trajectories of objects in space in
 * On first use, must:
     1. Copy the .../files/images folder and place it in the VPython package folder .../Lib/site-packages/vpython/vpython_data/ .
     2. Copy everything else from .../files/ and place them in .../Lib/site-packages/vpython/vpython_libraries/ to replace the default files.
-* To run:
+* To run the GUI:
 
         import orbits_GUI as orb  
         orb.Simulate()
-* To exit, just close the browser window.
+* To exit the Gui, just close the browser window.
 
 ## Screenshot
 Screenshot of over 2600 satellites orbiting Earth using real satellite data.
