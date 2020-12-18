@@ -21,6 +21,7 @@ class Simulate:
         #self._scene.resizable = False
         self._controls = Controls(self._scene)
         self._gravity = self._controls.gravity
+        self._dt = self._controls.dt
         while True:
             self.__build_scenario()
             self.__simulate_scenario()
@@ -123,7 +124,7 @@ class Simulate:
 
         while not self._controls.scenario_running:
             self._spheres = self._controls.spheres
-            self._dt = self._controls.dt
+            #self._dt = self._controls.dt
 
     def __simulate_scenario(self):
         """ Simulates the given scenario. """
@@ -142,13 +143,19 @@ class Simulate:
 
         while self._controls.scenario_running:
             self._spheres = self._controls.spheres
-            self._dt = self._controls.dt
+            #self._dt = self._controls.dt
+
+            # According to .../vpython/rate_control.py line 19:
+            # Unresolved bug: rate(X) yields only about 0.8X iterations per second.
+            rate(self._controls.time_rate_seconds/(0.8*self._dt))
 
             if self._scene.height != self._screen_height - self._controls.scene_height_sub:
                 self._scene.height = self._screen_height - self._controls.scene_height_sub
                 self._time_stamp.pos = vector(20, self._scene.height-28, 0)
 
-            rate(self._controls.frame_rate)
+            if self._controls.labelled_sphere:
+                self._controls.labelled_sphere.label.pos = vector(20, self._scene.height - 100, 0)
+
             if self._controls.running:
                 self._massives = [sph for sph in self._spheres if sph.massive]
                 self.__update_spheres()

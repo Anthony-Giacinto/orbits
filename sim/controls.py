@@ -34,14 +34,16 @@ class AttributeManager:
     preset_maneuvers_dict = {maneuver.classname: maneuver
                              for maneuver in [Hohmann, BiElliptic, GeneralTransfer, SimplePlaneChange]}
     pixel_per_space = 197.9/18 # approximate amount of pixels per character on startup with current font settings
+    convert_time_units = {'s': 1, 'min': 60, 'hr': 3600}
 
     attr_dict = {'running': True, 'scenario_running': False, 'previous_sphere': None, 'labelled_sphere': None,
-                 'loading_message': None, 'spheres': [], 'dt': 1.0, 'frame_rate': 1080, 'start_time': 'now',
+                 'loading_message': None, 'spheres': [], 'dt': 1.0, 'time_rate': 1, 'start_time': 'now',
                  '_year': None, '_month': None, '_day': None, '_hour': None, '_minute': None, '_second': None,
                  'scene_height_sub': canvas_build_height_sub, 'axes': False, 'current_blocks': None, 'maneuver': None,
                  'year_input': None, 'month_input': None, 'day_input': None, 'hour_input': None, 'minute_input': None,
                  'second_input': None, 'maneuver_year': None,  'maneuver_month': None, 'maneuver_day': None,
-                 'maneuver_hour': None, 'maneuver_minute': None, 'maneuver_second': None}
+                 'maneuver_hour': None, 'maneuver_minute': None, 'maneuver_second': None, 'time_units': 's',
+                 'time_rate_seconds': 1}
 
     sphere_value_dict = {'position': [0.0, 0.0, 0.0], 'velocity': [0.0, 0.0, 0.0], 'mass': 10.0, 'radius': 100.0,
                          'rotation': 0.0, 'semi_latus_rectum': 0.0, 'eccentricity': 0.0, 'inclination': 0.0,
@@ -73,8 +75,9 @@ class LocationManager:
 
     # Title Row:
     title_row = {'run_scenario_button': 'run_scenario', 'pause_button': 'pause', 'reset_button': 'reset',
-                 'camera_follow_Winput': ('follow_text', 'follow_input'), 'dt_Winput': ('dt_text', 'dt_input'),
-                 'frame_rate_Winput': ('frame_rate_text', 'frame_rate_input')}
+                 'camera_follow_Winput': ('follow_text', 'follow_input'),
+                 'time_rate_Winput': ('time_rate_text', 'time_rate_input'),
+                 'time_rate_units_menu_dropdown': 'time_rate_units_menu'}
 
     # Caption Rows:
     caption_row = {'scenario_menu_dropdown': 'scenario_menu', 'body_menu_dropdown': 'body_menu',
@@ -177,7 +180,7 @@ class LocationManager:
 class Controls(AttributeManager, LocationManager):
     """ Custom controls for interacting with VPython objects.
 
-    Pause/Run: Hit the Pause/Run button on the screen or press the Shift key.
+    Pause/Run: Hit the Pause/Run button on the screen or press 'p'.
     Delete Object: Left Mouse Click while holding either delete or backspace.
     Change camera: Enter the index of the desired sphere into text box and hit enter.
     """
@@ -310,7 +313,7 @@ class Controls(AttributeManager, LocationManager):
             if self.running:
                 b.text = '<b>Pause</b>'
             else:
-                b.text = '<b>Play</b>'
+                b.text = '<b> Play  </b>'
 
     def pause_button(self):
         self.pause = button(text='<b>Pause</b>', pos=self.scene.title_anchor, bind=self.pause_button_func,
@@ -329,31 +332,40 @@ class Controls(AttributeManager, LocationManager):
                             background=vector(0.7, 0.7, 0.7))
 
     def camera_follow_func(self, w):
-        if isinstance(w.number, int):
-            w.text = w.number
-            sph = self.spheres[w.number]
-            self.scene.camera.follow(sph)
-            #self.set_zoom(sph.radius, 0.75)
+        for sph in self.spheres:
+            if sph.name.lower() == w.text.lower():
+                self.scene.camera.follow(sph)
 
     def camera_follow_Winput(self):
-        self.follow_text = wtext(text='   <b>Sphere to Follow: </b>', pos=self.scene.title_anchor)
-        self.follow_input = Winput(bind=self.camera_follow_func, text='index', pos=self.scene.title_anchor)
+        self.follow_text = wtext(text=' <b>Following: </b>', pos=self.scene.title_anchor)
+        self.follow_input = Winput(bind=self.camera_follow_func, pos=self.scene.title_anchor,
+                                   type='string')
 
     def dt_Winput_func(self, w):
         if isinstance(w.number, (int, float)):
             self.dt = w.text = w.number
 
     def dt_Winput(self):
-        self.dt_text = wtext(text='   <b>Time Step (s): </b>', pos=self.scene.title_anchor)
+        self.dt_text = wtext(text='  <b>Time Step (s): </b>', pos=self.scene.title_anchor)
         self.dt_input = Winput(bind=self.dt_Winput_func, text=f'{self.dt}', pos=self.scene.title_anchor)
 
-    def frame_rate_Winput_func(self, w):
-        if isinstance(w.number, int):
-            self.frame_rate = w.text = w.number
+    def time_rate_units_func(self, m):
+        self.time_units = m.selected
 
-    def frame_rate_Winput(self):
-        self.frame_rate_text = wtext(text='   <b>Frame Rate: </b>', pos=self.scene.title_anchor)
-        self.frame_rate_input = Winput(bind=self.frame_rate_Winput_func, text=f'{self.frame_rate}',
+    def time_rate_units_menu_dropdown(self):
+        c = ['s', 'min', 'hr']
+        self.scene.append_to_title(' ')
+        self.time_rate_units_menu = menu(choices=c, bind=self.time_rate_units_func, pos=self.scene.title_anchor)
+
+    def time_rate_Winput_func(self, w):
+        if isinstance(w.number, int):
+            w.text = w.number
+            self.time_rate = w.number # in chosen units
+            self.time_rate_seconds = w.number*self.convert_time_units[self.time_units] # in seconds
+
+    def time_rate_Winput(self):
+        self.time_rate_text = wtext(text='  <b>Time Rate (unit/s): </b>', pos=self.scene.title_anchor)
+        self.time_rate_input = Winput(bind=self.time_rate_Winput_func, text=f'{self.time_rate}',
                                        pos=self.scene.title_anchor)
 
     def show_axes_checkbox_func(self, c):
@@ -379,6 +391,7 @@ class Controls(AttributeManager, LocationManager):
             self.spheres = list(func(**kwargs))
             self.primary = self.spheres[0]
             self.scene.camera.follow(self.primary)
+            self.follow_input.text = self.primary.name
             if zoom:
                 self.set_zoom(self.primary.radius, 5)
             self.create_caption('starting_time_block')
@@ -401,16 +414,16 @@ class Controls(AttributeManager, LocationManager):
                    body_eccentricity=0.4, show_axes=self.axes)
 
         elif m.selected == 'Hohmann Transfer':
-            preset(presets.hohmann, start_time=datetime.datetime.utcnow() + datetime.timedelta(seconds=5000),
-                   inclination=30, show_axes=self.axes)
+            preset(presets.hohmann, start_time=datetime.datetime.utcnow() + datetime.timedelta(seconds=10000),
+                   inclination=0, show_axes=self.axes)
 
         elif m.selected == 'Bi-Elliptic Transfer':
-            preset(presets.bi_elliptic, start_time=datetime.datetime.utcnow() + datetime.timedelta(seconds=5000),
-                   inclination=75, show_axes=self.axes)
+            preset(presets.bi_elliptic, start_time=datetime.datetime.utcnow() + datetime.timedelta(seconds=10000),
+                   inclination=0, show_axes=self.axes)
 
         elif m.selected == 'General Transfer':
             preset(presets.general, start_time=datetime.datetime.utcnow() + datetime.timedelta(seconds=5000),
-                   inclination=120, show_axes=self.axes)
+                   inclination=0, show_axes=self.axes)
 
         elif m.selected == 'Simple Plane Change':
             preset(presets.plane_change, start_time=datetime.datetime.utcnow() + datetime.timedelta(seconds=5000),
@@ -536,6 +549,7 @@ class Controls(AttributeManager, LocationManager):
                     self.scene.lights[0].visible = False
                     self.primary.luminous = True
                 self.scene.camera.follow(self.primary)
+                self.follow_input.text = self.primary.name
                 m.selected = 'Choose Body...'
 
     def body_menu_dropdown(self):
@@ -550,6 +564,9 @@ class Controls(AttributeManager, LocationManager):
                 self.run_scenario.text = '<b>End Scenario</b>'
                 self.pause.disabled = self.body_menu.disabled = False
                 self.scene_height_sub = self.canvas_simulate_height_sub
+                self.follow_input.text = self.primary.name
+                self.time_rate_units_menu.selected = self.time_units
+
             else:
                 self.reset_button_func(self.reset_button)
                 self.pause.disabled = True
@@ -981,7 +998,7 @@ class Controls(AttributeManager, LocationManager):
                                   background=vector(0.7, 0.7, 0.7))
 
     def space_up(self):
-        if 'shift' in keysdown():
+        if 'p' in keysdown():
             self.pause_button_func(self.pause)
 
     def mouse_down(self):
@@ -996,14 +1013,12 @@ class Controls(AttributeManager, LocationManager):
                 if obj is self.primary:
                     self.primary = None
                 obj.delete()
-
-            elif self.scenario_running:
+            else:
                 if isinstance(self.labelled_sphere, Sphere):
                     self.labelled_sphere.labelled = False
                 self.labelled_sphere = obj
                 obj.labelled = True
-
-        elif self.scenario_running:
+        else:
             if isinstance(self.labelled_sphere, Sphere):
                 self.labelled_sphere.labelled = False
             self.labelled_sphere = None
