@@ -79,3 +79,7 @@ Project was created with:
 ![bielliptic](/files/screenshots/bielliptic.png)  
 ![general](/files/screenshots/general.png)  
 ![planechange](/files/screenshots/planechange.png)    
+
+* At any point during the building of the scenario, you can choose the starting time for the scenario:  
+
+![starttime](/files/screenshots/starttime.png)  
