@@ -24,12 +24,12 @@ This project allows the user to simulate the trajectories of objects in space in
 * Can perform astrodynamics calculations without the GUI:
         
         import orbits_GUI as orb
-        orb.astro."function name"
+        orb.astro."function"
     
     or
     
         import orbits_gui.astro as astro
-        astro."function name"
+        astro."function"
 
 ## Screenshot
 Screenshot of over 2600 satellites orbiting Earth using real satellite data.
