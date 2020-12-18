@@ -9,6 +9,13 @@ This project allows the user to simulate the trajectories of objects in space us
 * [How to Use](#how-to-use)
 
 ## General Info
+* On first use, must:
+    1. Copy the .../files/images folder and place it in the VPython package folder .../Lib/site-packages/vpython/vpython_data/ .
+    2. Copy everything else from .../files/ and place them in .../Lib/site-packages/vpython/vpython_libraries/ to replace the default files.
+* To run:
+
+        import orbits_GUI as orb  
+        orb.Simulate()
 
 ## Screenshot
 Screenshot of over 2600 satellites orbiting Earth using real satellite data.
@@ -29,10 +36,6 @@ Project was created with:
 * Deals with orbit perturbations by using Cowell's method.
 
 ## How to Use
-* On first use, must:
-    1. Copy the .../files/images folder and place it in the VPython package folder .../Lib/site-packages/vpython/vpython_data/ .
-    2. Copy everything else from .../files/ and place them in .../Lib/site-packages/vpython/vpython_libraries/ to replace the default files.
-* To run:
-
-        import orbits_GUI as orb  
-        orb.Simulate()
+* Run Scenario / End Scenario: Starts and ends the simulation.
+* Pause / Play: Pauses and plays the simulation after it has begun.
+* \u21BA
