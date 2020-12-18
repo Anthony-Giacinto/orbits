@@ -2,7 +2,7 @@ import math
 import numpy as np
 from vpython import vector, dot, mag
 from orbits_GUI.sim.sphere import Sphere
-from orbits_GUI.astro.params import Earth, Moon, Sun, Venus, Uranus
+from orbits_GUI.astro.params import Earth, Moon
 from orbits_GUI.astro.rfunc import sat_data, random_element_angles
 from orbits_GUI.astro.vectors import Elements, elements_multiple
 from orbits_GUI.astro.maneuvers import Hohmann, BiElliptic, GeneralTransfer, SimplePlaneChange
@@ -52,7 +52,7 @@ def satellites_perturbed(rows=30, radius=65.0, perturbing_body=Moon, body_semi_l
     return spheres
 
 
-def hohmann(initial_radius=Earth.radius+2000, final_radius=Earth.radius+20000, inclination=0.0,
+def hohmann(initial_radius=Earth.radius+2000, final_radius=Earth.radius+10000, inclination=0.0,
             longitude_of_ascending_node=0.0, epoch_angle=0.0, mass=10.0, sat_radius=100.0, start_time=10000.0,
             show_axes=False):
     """ Animates a hohmann transfer of a satellite around Earth.
