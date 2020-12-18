@@ -34,7 +34,7 @@ Functions:
 
 import math
 import numpy as np
-from orbits_GUI.astro.params import Earth
+from orbits.astro.params import Earth
 
 
 __earth = Earth.gravitational_parameter

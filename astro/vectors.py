@@ -17,11 +17,11 @@ Classes:
 
 import math
 import numpy as np
-from orbits_GUI.astro.params import Earth
-from orbits_GUI.astro.afunc import orbital_radius, angular_momentum, node_vector, eccentricity_vector, \
+from orbits.astro.params import Earth
+from orbits.astro.afunc import orbital_radius, angular_momentum, node_vector, eccentricity_vector, \
     semi_latus_rectum, semi_major_axis, mechanical_energy
-from orbits_GUI.astro.rfunc import station_position
-from orbits_GUI.astro.transf import peri_to_geo, peri_to_geo_i, peri_to_geo_e, topo_to_geo
+from orbits.astro.rfunc import station_position
+from orbits.astro.transf import peri_to_geo, peri_to_geo_i, peri_to_geo_e, topo_to_geo
 
 
 class Elements:

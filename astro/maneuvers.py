@@ -23,9 +23,9 @@ Notes:
 
 import math
 import datetime
-from orbits_GUI.astro.params import Earth
-from orbits_GUI.astro.afunc import semi_major_axis, vis_viva, periapsis_length, apoapsis_length, circular_speed, \
-    period, flight_time
+from orbits.astro.params import Earth
+from orbits.astro.afunc import semi_major_axis, vis_viva, periapsis_length, apoapsis_length, circular_speed, period, \
+    flight_time
 
 
 def delta_v(radius, semi_major_axis_transfer_orbit, gravitational_parameter):

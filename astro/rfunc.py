@@ -22,7 +22,7 @@ import random
 import os
 import numpy as np
 import pandas as pd
-from orbits_GUI.astro.params import Earth
+from orbits.astro.params import Earth
 
 
 __this_folder = os.path.dirname(os.path.abspath(__file__))
