@@ -56,14 +56,25 @@ Project was created with:
     * Can choose between prebuilt scenarios or a custom scenario.  
 
 ![choose_scenario](/files/screenshots/choose_scenario.png)  
+
 * If building a custom scenario, choose a body:  
 
 ![choose_body](/files/screenshots/choose_body.png)  
+
 * There are four options for postion determination:  
-    * The elements, doppler radar, and radar options are meant to be used with respect to some primary body.  
+    * The classical elements, doppler radar, and radar options are meant to be used with respect to some primary body.
+    * Enter in all the desired values, and press enter/return for each input.
+    * Click "Create Body".
 
 ![vectors](/files/screenshots/vectors.png)  
 ![elements](/files/screenshots/elements.png)  
 ![doppler](/files/screenshots/doppler.png)  
 ![radar](/files/screenshots/radar.png)  
 
+* If determining position and velocity from classical elements, you can add a maneuver to the body:
+    * Hohmann, Bi-Elliptic, General, Simple Plane Change.  
+
+![hohmann](/files/screenshots/hohmann.png)  
+![biellptic](/files/screenshots/biellptic.png)  
+![general](/files/screenshots/general.png)  
+![planechange](/files/screenshots/planechange.png)  
