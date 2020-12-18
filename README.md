@@ -1,5 +1,5 @@
 # Orbits
-This project allows the user to simulate the trajectories of objects in space using fundamental astrodynamics calculations.
+This project allows the user to simulate the trajectories of objects in space inside of a browser window using fundamental astrodynamics calculations.
 
 ## Table of Contents
 * [General info](#general-info)
@@ -10,6 +10,8 @@ This project allows the user to simulate the trajectories of objects in space us
 * [How to Use](#how-to-use)
 
 ## General Info
+* The recommended browser to use is Microsoft Edge.  
+
 * On first use, must:
     1. Copy the .../files/images folder and place it in the VPython package folder .../Lib/site-packages/vpython/vpython_data/ .
     2. Copy everything else from .../files/ and place them in .../Lib/site-packages/vpython/vpython_libraries/ to replace the default files.
