@@ -1,4 +1,4 @@
-from orbits_GUI.sim.sim import Simulate
-from orbits_GUI import astro
+from orbits.sim.sim import Simulate
+from orbits import astro
 
 __all__ = ['Simulate', 'astro']
