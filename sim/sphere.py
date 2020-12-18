@@ -2,10 +2,10 @@ import math
 import random as ran
 import numpy as np
 from vpython import sphere, simple_sphere, vector, color, textures, local_light, label, arrow
-from orbits_GUI.astro.params import gravity
-from orbits_GUI.astro.vectors import Elements
-from orbits_GUI.astro.maneuvers import Maneuver
-from orbits_GUI.astro.transf import rodrigues_rotation, rotate_y
+from orbits.astro.params import gravity
+from orbits.astro.vectors import Elements
+from orbits.astro.maneuvers import Maneuver
+from orbits.astro.transf import rodrigues_rotation, rotate_y
 
 
 class Sphere(simple_sphere, sphere, Elements, Maneuver):

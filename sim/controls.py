@@ -2,17 +2,17 @@ import math
 import copy
 import datetime
 from vpython import button, winput, wtext, menu, keysdown, vector, label, checkbox
-from orbits_GUI.sim.sphere import Sphere
-from orbits_GUI.astro.params import Sun, Mercury, Venus, Earth, Moon, Mars, Jupiter, Saturn, Uranus, Neptune, gravity
-from orbits_GUI.astro.vectors import Elements, DopplerRadar, Radar
-import orbits_GUI.scenarios.presets as presets
-from orbits_GUI.astro.maneuvers import Hohmann, BiElliptic, GeneralTransfer, SimplePlaneChange
+from orbits.sim.sphere import Sphere
+from orbits.astro.params import Sun, Mercury, Venus, Earth, Moon, Mars, Jupiter, Saturn, Uranus, Neptune, gravity
+from orbits.astro.vectors import Elements, DopplerRadar, Radar
+import orbits.scenarios.presets as presets
+from orbits.astro.maneuvers import Hohmann, BiElliptic, GeneralTransfer, SimplePlaneChange
 
 
 class Winput(winput):
-    def __init__(self, **kwargs):
+    def __init__(self, width=98.95, **kwargs):
         kwargs['height'] = 23
-        kwargs['width'] = 98.95
+        kwargs['width'] = width
         super().__init__(**kwargs)
 
     @property
@@ -75,7 +75,7 @@ class LocationManager:
 
     # Title Row:
     title_row = {'run_scenario_button': 'run_scenario', 'pause_button': 'pause', 'reset_button': 'reset',
-                 'camera_follow_Winput': ('follow_text', 'follow_input'),
+                 'camera_follow_Winput': ('follow_text', 'follow_input'), 'dt_Winput': ('dt_text', 'dt_input'),
                  'time_rate_Winput': ('time_rate_text', 'time_rate_input'),
                  'time_rate_units_menu_dropdown': 'time_rate_units_menu'}
 
@@ -328,7 +328,7 @@ class Controls(AttributeManager, LocationManager):
         self.scene.lights[0].visible = True
 
     def reset_button(self):
-        self.reset = button(text='<b>\u21BA</b>', pos=self.scene.title_anchor, bind=self.reset_button_func,
+        self.reset = button(text='<b>Reset</b>', pos=self.scene.title_anchor, bind=self.reset_button_func,
                             background=vector(0.7, 0.7, 0.7))
 
     def camera_follow_func(self, w):
@@ -343,11 +343,28 @@ class Controls(AttributeManager, LocationManager):
 
     def dt_Winput_func(self, w):
         if isinstance(w.number, (int, float)):
-            self.dt = w.text = w.number
+            if self.dt < self.time_rate_seconds:
+                self.dt = w.text = w.number
+            else:
+                self.dt = w.text = self.time_rate_seconds
 
     def dt_Winput(self):
         self.dt_text = wtext(text='  <b>Time Step (s): </b>', pos=self.scene.title_anchor)
-        self.dt_input = Winput(bind=self.dt_Winput_func, text=f'{self.dt}', pos=self.scene.title_anchor)
+        self.dt_input = Winput(bind=self.dt_Winput_func, text=f'{self.dt}', pos=self.scene.title_anchor, width=50)
+
+    def time_rate_Winput_func(self, w):
+        if isinstance(w.number, int):
+            self.time_rate = w.number
+            self.time_rate_seconds = self.time_rate*self.convert_time_units[self.time_units] # in seconds
+            if self.time_rate_seconds > self.dt:
+                w.text = self.time_rate # in chosen units
+            else:
+                self.time_rate_seconds = w.text = self.dt
+
+    def time_rate_Winput(self):
+        self.time_rate_text = wtext(text='  <b>Time Rate (unit/time step): </b>', pos=self.scene.title_anchor)
+        self.time_rate_input = Winput(bind=self.time_rate_Winput_func, text=f'{self.time_rate}',
+                                      pos=self.scene.title_anchor, width=50)
 
     def time_rate_units_func(self, m):
         self.time_units = m.selected
@@ -356,17 +373,6 @@ class Controls(AttributeManager, LocationManager):
         c = ['s', 'min', 'hr']
         self.scene.append_to_title(' ')
         self.time_rate_units_menu = menu(choices=c, bind=self.time_rate_units_func, pos=self.scene.title_anchor)
-
-    def time_rate_Winput_func(self, w):
-        if isinstance(w.number, int):
-            w.text = w.number
-            self.time_rate = w.number # in chosen units
-            self.time_rate_seconds = w.number*self.convert_time_units[self.time_units] # in seconds
-
-    def time_rate_Winput(self):
-        self.time_rate_text = wtext(text='  <b>Time Rate (unit/s): </b>', pos=self.scene.title_anchor)
-        self.time_rate_input = Winput(bind=self.time_rate_Winput_func, text=f'{self.time_rate}',
-                                       pos=self.scene.title_anchor)
 
     def show_axes_checkbox_func(self, c):
         self.axes = not self.axes
@@ -386,8 +392,12 @@ class Controls(AttributeManager, LocationManager):
 
     def scenario_menu_func(self, m):
 
-        def preset(func, zoom=False, **kwargs):
+        def preset(func, zoom=False, dt=1.0, time_rate=1, time_units ='s', **kwargs):
             self.loading(True)
+            self.time_rate_units_menu.selected = self.time_units = time_units
+            self.time_rate_input.text = self.time_rate = time_rate
+            self.time_rate_seconds = self.time_rate*self.convert_time_units[self.time_units]
+            self.dt_input.text = self.dt = dt
             self.spheres = list(func(**kwargs))
             self.primary = self.spheres[0]
             self.scene.camera.follow(self.primary)
@@ -405,13 +415,11 @@ class Controls(AttributeManager, LocationManager):
             self.body_menu.disabled = False
 
         elif m.selected == 'Earth Satellites':
-            self.dt_input.text = self.dt = 100
-            preset(presets.satellites, zoom=True, rows=2600, show_axes=self.axes)
+            preset(presets.satellites, zoom=True, dt=30, time_units='hr', rows=2600, show_axes=self.axes)
 
         elif m.selected == 'Earth Satellites Perturbed':
-            self.dt_input.text = self.dt = 100
-            preset(presets.satellites_perturbed, zoom=True, rows=2600, body_semi_latus_rectum=30000,
-                   body_eccentricity=0.4, show_axes=self.axes)
+            preset(presets.satellites_perturbed, zoom=True, dt=100, time_units='hr', rows=2600,
+                   body_semi_latus_rectum=30000, body_eccentricity=0.4, show_axes=self.axes)
 
         elif m.selected == 'Hohmann Transfer':
             preset(presets.hohmann, start_time=datetime.datetime.utcnow() + datetime.timedelta(seconds=10000),
@@ -560,7 +568,7 @@ class Controls(AttributeManager, LocationManager):
         if self.spheres and not self.loading_message:
             self.scenario_running = not self.scenario_running
             if self.scenario_running:
-                self.widget_startup()
+                self.create_caption_row()
                 self.run_scenario.text = '<b>End Scenario</b>'
                 self.pause.disabled = self.body_menu.disabled = False
                 self.scene_height_sub = self.canvas_simulate_height_sub

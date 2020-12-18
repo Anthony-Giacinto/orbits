@@ -2,10 +2,10 @@ import datetime
 import pyautogui
 import numpy as np
 from vpython import vector, canvas, rate, mag, label, norm
-from orbits_GUI.sim.controls import Controls
-from orbits_GUI.astro.transf import rodrigues_rotation
-from orbits_GUI.astro.rfunc import decimal_length, round_to_place, integer_length
-from orbits_GUI.astro.maneuvers import Hohmann, BiElliptic, GeneralTransfer, SimplePlaneChange
+from orbits.sim.controls import Controls
+from orbits.astro.transf import rodrigues_rotation
+from orbits.astro.rfunc import decimal_length, round_to_place, integer_length
+from orbits.astro.maneuvers import Hohmann, BiElliptic, GeneralTransfer, SimplePlaneChange
 
 
 class Simulate:
@@ -21,7 +21,6 @@ class Simulate:
         #self._scene.resizable = False
         self._controls = Controls(self._scene)
         self._gravity = self._controls.gravity
-        self._dt = self._controls.dt
         while True:
             self.__build_scenario()
             self.__simulate_scenario()
@@ -124,7 +123,7 @@ class Simulate:
 
         while not self._controls.scenario_running:
             self._spheres = self._controls.spheres
-            #self._dt = self._controls.dt
+            self._dt = self._controls.dt
 
     def __simulate_scenario(self):
         """ Simulates the given scenario. """
@@ -143,7 +142,7 @@ class Simulate:
 
         while self._controls.scenario_running:
             self._spheres = self._controls.spheres
-            #self._dt = self._controls.dt
+            self._dt = self._controls.dt
 
             # According to .../vpython/rate_control.py line 19:
             # Unresolved bug: rate(X) yields only about 0.8X iterations per second.
@@ -154,7 +153,7 @@ class Simulate:
                 self._time_stamp.pos = vector(20, self._scene.height-28, 0)
 
             if self._controls.labelled_sphere:
-                self._controls.labelled_sphere.label.pos = vector(20, self._scene.height - 100, 0)
+                self._controls.labelled_sphere.label.pos = vector(20, self._scene.height-100, 0)
 
             if self._controls.running:
                 self._massives = [sph for sph in self._spheres if sph.massive]
