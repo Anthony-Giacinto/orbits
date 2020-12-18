@@ -6,7 +6,6 @@ This project allows the user to simulate the trajectories of objects in space us
 * [Screenshot](#screenshot)
 * [Technologies](#technologies)
 * [Features](#features)
-* [Examples](#examples)
 * [How to Use](#how-to-use)
 
 ## General Info
@@ -28,8 +27,6 @@ Project was created with:
 * Can determine the position and velocity vectors of an orbiting object (Geocentric-Equatorial frame) from given radar measurements.
 * Can determine the position and velocity vectors of an orbiting object (Geocentric-Equatorial frame) from given classical orbit elements and vice versa.
 * Deals with orbit perturbations by using Cowell's method.
-
-## Examples
 
 ## How to Use
 * On first use, must:
