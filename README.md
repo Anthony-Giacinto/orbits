@@ -60,6 +60,7 @@ Project was created with:
 
 ![choose_body](/files/screenshots/choose_body.png)  
 * There are four options for postion determination:  
+    * The elements, doppler radar, and radar options are meant to be used with respect to some primary body.  
 
 ![vectors](/files/screenshots/vectors.png)  
 ![elements](/files/screenshots/elements.png)  
