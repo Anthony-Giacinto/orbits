@@ -92,6 +92,6 @@ Project was created with:
 ![planechange](/files/screenshots/planechange.png)    
 
 * At any point during the building of the scenario, you can choose the starting time for the scenario:  
-    * The default scenario starting time will be the date and time when "Start Scenario" is clicked.
+    * The default scenario starting time will be the date and time when "Run Scenario" is clicked.
 
 ![starttime](/files/screenshots/starttime.png)  
