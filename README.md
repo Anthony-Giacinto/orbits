@@ -10,8 +10,7 @@ This project allows the user to simulate the trajectories of objects in space in
 * [How to Use](#how-to-use)
 
 ## General Info
-* The recommended browser to use is Microsoft Edge.  
-
+* The recommended browser to use is Microsoft Edge.
 * On first use, must:
     1. Copy the .../files/images folder and place it in the VPython package folder .../Lib/site-packages/vpython/vpython_data/ .
     2. Copy everything else from .../files/ and place them in .../Lib/site-packages/vpython/vpython_libraries/ to replace the default files.
@@ -20,7 +19,6 @@ This project allows the user to simulate the trajectories of objects in space in
         import orbits_GUI as orb  
         orb.Simulate()
 * To exit the Gui, just close the browser window.
-
 * Can perform astrodynamics calculations without the GUI:
         
         import orbits_GUI as orb
@@ -30,7 +28,6 @@ This project allows the user to simulate the trajectories of objects in space in
     
         import orbits_gui.astro as astro
         astro."function"
-
 * The browser GUI was built using VPython:
     * https://www.glowscript.org/docs/VPythonDocs/index.html
 
