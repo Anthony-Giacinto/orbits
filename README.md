@@ -32,10 +32,10 @@ Project was created with:
 ## Examples
 
 ## How to Use
-1. On first use, must:
+* On first use, must:
     1. Copy the .../files/images folder and place it in the VPython package folder .../Lib/site-packages/vpython/vpython_data/ .
     2. Copy everything else from .../files/ and place them in .../Lib/site-packages/vpython/vpython_libraries/ to replace the default files.
-2. To run:
+* To run:
 
         import orbits_GUI as orb  
         orb.Simulate()
