@@ -5,5 +5,4 @@ from .rfunc import *
 from .transf import *
 from .vectors import *
 
-__all__ = ['afunc', 'maneuvers', 'Earth', 'Moon', 'Sun', 'rfunc', 'transf', 'Elements', 'ElementsMultiple',
-           'DetermineElements', 'DopplerRadar', 'Radar']
+__all__ = ['afunc', 'maneuvers', 'params', 'rfunc', 'transf', 'vectors']
