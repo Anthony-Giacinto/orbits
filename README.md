@@ -61,7 +61,7 @@ Project was created with:
 
 ![choose_body](/files/screenshots/choose_body.png)  
 
-* There are four options for postion determination:  
+* There are four options for postion and velocity determination:  
     * The classical elements, doppler radar, and radar options are meant to be used with respect to some primary body.
     * Enter in all the desired values, and press enter/return for each input.
     * Click "Create Body".
@@ -75,6 +75,6 @@ Project was created with:
     * Hohmann, Bi-Elliptic, General, Simple Plane Change.  
 
 ![hohmann](/files/screenshots/hohmann.png)  
-![biellptic](/files/screenshots/biellptic.png)  
+![bielliptic](/files/screenshots/bielliptic.png)  
 ![general](/files/screenshots/general.png)  
 ![planechange](/files/screenshots/planechange.png)  
