@@ -57,4 +57,5 @@ Project was created with:
 
 ![choose_scenario](/files/screenshots/choose_scenario.png)  
 * If building a custom scenario, choose a body:  
+
 ![choose_body](/files/screenshots/choose_body.png)  
