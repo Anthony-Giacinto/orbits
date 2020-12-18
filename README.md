@@ -42,7 +42,6 @@ Project was created with:
 ## Features
 * Can animate trajectories of objects in space.
 * Contains many useful astrodynamics functions.
-* Can animate satellites using satellite data from an Excel spreadsheet (perigee, eccentricity, inclination, mass).
 * Can animate orbit transfers and plane changes (hohmann transfer, bi-elliptic transfer, general transfer, simple plane change).
 * Can calculate the necessary delta-v and burn angle for certain orbit transfers.
 * Can determine the position and velocity vectors of an orbiting object (Geocentric-Equatorial frame) from given radar measurements.
