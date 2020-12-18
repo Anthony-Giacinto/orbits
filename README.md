@@ -1,4 +1,4 @@
-# orgits_gui
+# orbits_gui
 This project allows the user to simulate the trajectories of objects in space using fundamental astrodynamics calculations.
 
 ## Table of Contents
