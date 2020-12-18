@@ -31,6 +31,9 @@ This project allows the user to simulate the trajectories of objects in space in
         import orbits_gui.astro as astro
         astro."function"
 
+* The browser GUI was built using VPython:
+    * https://www.glowscript.org/docs/VPythonDocs/index.html
+
 ## Screenshot
 Screenshot of over 2600 satellites orbiting Earth using real satellite data.
 ![satellites](/files/screenshots/satellites.png)
