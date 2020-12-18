@@ -1,11 +1,11 @@
 import math
 import numpy as np
 from vpython import vector, dot, mag
-from orbits_GUI.sim.sphere import Sphere
-from orbits_GUI.astro.params import Earth, Moon
-from orbits_GUI.astro.rfunc import sat_data, random_element_angles
-from orbits_GUI.astro.vectors import Elements, elements_multiple
-from orbits_GUI.astro.maneuvers import Hohmann, BiElliptic, GeneralTransfer, SimplePlaneChange
+from orbits.sim.sphere import Sphere
+from orbits.astro.params import Earth, Moon
+from orbits.astro.rfunc import sat_data, random_element_angles
+from orbits.astro.vectors import Elements, elements_multiple
+from orbits.astro.maneuvers import Hohmann, BiElliptic, GeneralTransfer, SimplePlaneChange
 
 
 def satellites(rows=30, radius=65.0, show_axes=False):
