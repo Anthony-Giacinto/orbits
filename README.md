@@ -16,17 +16,17 @@ This project allows the user to simulate the trajectories of objects in space in
     2. Copy everything else from .../files/ and place them in .../Lib/site-packages/vpython/vpython_libraries/ to replace the default files.
 * To run the GUI:
 
-        import orbits_GUI as orb  
+        import orbits as orb  
         orb.Simulate()
 * To exit the Gui, just close the browser window.
 * Can perform astrodynamics calculations without the GUI:
         
-        import orbits_GUI as orb
+        import orbits as orb
         orb.astro."function"
     
     or
     
-        import orbits_gui.astro as astro
+        import orbits.astro as astro
         astro."function"
 * The browser GUI was built using VPython:
     * https://www.glowscript.org/docs/VPythonDocs/index.html
