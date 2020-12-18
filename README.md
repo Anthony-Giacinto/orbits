@@ -38,4 +38,4 @@ Project was created with:
 ## How to Use
 * Run Scenario / End Scenario: Starts and ends the simulation.
 * Pause / Play: Pauses and plays the simulation after it has begun.
-* \u21BA
+* &#21BA
