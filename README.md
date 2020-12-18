@@ -59,3 +59,10 @@ Project was created with:
 * If building a custom scenario, choose a body:  
 
 ![choose_body](/files/screenshots/choose_body.png)  
+* There are four options for postion determination:  
+
+![vectors](/files/screenshots/vectors.png)  
+![elements](/files/screenshots/elements.png)  
+![doppler](/files/screenshots/doppler.png)  
+![radar](/files/screenshots/radar.png)  
+
