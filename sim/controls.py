@@ -4,7 +4,7 @@ import datetime
 from vpython import button, winput, wtext, menu, keysdown, vector, label, checkbox
 from orbits.sim.sphere import Sphere
 import orbits.sim.presets as presets
-from orbits.astro.params import Sun, Mercury, Venus, Earth, Moon, Mars, Jupiter, Saturn, Uranus, Neptune, gravity
+import orbits.astro.params as params
 from orbits.astro.vectors import Elements, DopplerRadar, Radar
 from orbits.astro.maneuvers import Hohmann, BiElliptic, GeneralTransfer, SimplePlaneChange
 
@@ -28,9 +28,10 @@ class AttributeManager:
 
     canvas_build_height_sub = 490
     canvas_simulate_height_sub = 250
-    gravity = gravity(units='km')
+    gravity = params.gravity(units='km')
     preset_bodies_dict = {body.classname: body
-                          for body in [Sun, Mercury, Venus, Earth, Moon, Mars, Jupiter, Saturn, Uranus, Neptune]}
+                          for body in [params.Sun, params.Mercury, params.Venus, params.Earth, params.Moon, params.Mars,
+                                       params.Jupiter, params.Saturn, params.Uranus, params.Neptune]}
     preset_maneuvers_dict = {maneuver.classname: maneuver
                              for maneuver in [Hohmann, BiElliptic, GeneralTransfer, SimplePlaneChange]}
     pixel_per_space = 197.9/18 # approximate amount of pixels per character on startup with current font settings
