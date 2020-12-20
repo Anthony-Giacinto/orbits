@@ -4,12 +4,12 @@ This project allows the user to simulate the trajectories of objects in space in
 ## Table of Contents
 * [General info](#general-info)
 * [Screenshot](#screenshot)
-* [Technologies](#technologies)
 * [Features](#features)
 * [Controls](#controls)
 * [How to Use](#how-to-use)
 
 ## General Info
+* This project was created with Python 3.7 .
 * The recommended browsers to use are Microsoft Edge and Google Chrome.
 * On first use, must:
     1. Copy the .../files/images folder and place it in the VPython package folder .../Lib/site-packages/vpython/vpython_data/ .
@@ -34,10 +34,6 @@ This project allows the user to simulate the trajectories of objects in space in
 ## Screenshot
 Screenshot of over 2600 satellites orbiting Earth using real satellite data.
 ![satellites](/files/screenshots/satellites.png)
-
-## Technologies
-Project was created with:
-* Python 3.7
 
 ## Features
 * Can animate trajectories of objects in space.
