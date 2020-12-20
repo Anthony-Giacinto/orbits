@@ -63,8 +63,8 @@ Project was created with:
 * Toggle Axes: Toggles on/off cartesian axes on the primary body in the scenario.
 * Rotate the camera: Rmb and drag or ctrl + lmb.
 * Zoom in/out: Use the mouse scroll wheel or alt + lmb.
-* Delete objects: Delete/backspace + lmb.
-* Access info on object: Lmb.
+* Delete objects: Delete/backspace + lmb on object.
+* Access info on object: Lmb on object.
 
 ## How to Use
 * Choose a scenario
