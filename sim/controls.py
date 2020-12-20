@@ -3,9 +3,9 @@ import copy
 import datetime
 from vpython import button, winput, wtext, menu, keysdown, vector, label, checkbox
 from orbits.sim.sphere import Sphere
+import orbits.sim.presets as presets
 from orbits.astro.params import Sun, Mercury, Venus, Earth, Moon, Mars, Jupiter, Saturn, Uranus, Neptune, gravity
 from orbits.astro.vectors import Elements, DopplerRadar, Radar
-import orbits.scenarios.presets as presets
 from orbits.astro.maneuvers import Hohmann, BiElliptic, GeneralTransfer, SimplePlaneChange
 
 
@@ -506,16 +506,13 @@ class Controls(AttributeManager, LocationManager):
         if self.spheres:
             if m.selected == 'Choose Body...':
                 self.create_caption_row()
-
             elif m.selected == 'Custom':
                 self.sphere_value_reset()
                 self.create_caption(('vectors_block', 'starting_time_block'))
                 self.body_menu.selected = m.selected
                 self.maneuver_menu.disabled = True
-
                 if self.scenario_running:
                     self.scene_height_sub = self.canvas_build_height_sub
-
             else:
                 self.sphere_value_reset()
                 preset = self.preset_bodies_dict[m.selected]
@@ -527,14 +524,11 @@ class Controls(AttributeManager, LocationManager):
                 self.body_menu.selected = m.selected
                 self.create_caption(('vectors_block', 'starting_time_block'))
                 self.maneuver_menu.disabled = True
-
                 if self.scenario_running:
                     self.scene_height_sub = self.canvas_build_height_sub
-
         else:
             if m.selected == 'Choose Body...':
                 self.create_caption_row()
-
             elif m.selected == 'Custom':
                 self.sphere_value_reset()
                 self.create_caption(('vectors_block', 'starting_time_block'))
@@ -1005,10 +999,6 @@ class Controls(AttributeManager, LocationManager):
         self.create_body = button(text='<b>Create Body</b>', bind=self.create_body_func,
                                   background=vector(0.7, 0.7, 0.7))
 
-    def space_up(self):
-        if 'p' in keysdown():
-            self.pause_button_func(self.pause)
-
     def mouse_down(self):
         keys = keysdown()
         obj = self.scene.mouse.pick
@@ -1033,5 +1023,4 @@ class Controls(AttributeManager, LocationManager):
 
     def set_controls(self):
         self.widget_startup()
-        self.scene.bind('keyup', self.space_up)
         self.scene.bind('mousedown', self.mouse_down)

@@ -3,8 +3,8 @@ import pyautogui
 import numpy as np
 from vpython import vector, canvas, rate, mag, label, norm
 from orbits.sim.controls import Controls
+from orbits.sim.rfunc import decimal_length, round_to_place, integer_length
 from orbits.astro.transf import rodrigues_rotation
-from orbits.astro.rfunc import decimal_length, round_to_place, integer_length
 from orbits.astro.maneuvers import Hohmann, BiElliptic, GeneralTransfer, SimplePlaneChange
 
 
