@@ -6,7 +6,6 @@ This project allows the user to simulate the trajectories of objects in space in
 * [Screenshot](#screenshot)
 * [Technologies](#technologies)
 * [Features](#features)
-* [Widgets](#widgets)
 * [Controls](#controls)
 * [How to Use](#how-to-use)
 
@@ -49,7 +48,7 @@ Project was created with:
 * Can determine the position and velocity vectors of an orbiting object (Geocentric-Equatorial frame) from given classical orbit elements and vice versa.
 * Deals with orbit perturbations by using Cowell's method.
 
-## Widgets
+## Controls
 * Run Scenario/End Scenario Button: Starts and ends the simulation.
 * Pause/Play Button: Pauses and plays the simulation after it has begun.
 * Reset Button: Resets the GUI back to the start up GUI.
@@ -63,7 +62,6 @@ Project was created with:
 * Body Menu: Allows you to place objects into the scenario. Can choose from some preset planets or can create your own object.
 * Toggle Axes: Toggles on/off cartesian axes on the primary body in the scenario.    
 
-## Controls
 * Rotate the camera: Rmb and drag or ctrl + lmb.
 * Zoom in/out: Use the mouse scroll wheel or alt + lmb.
 * Delete objects: Delete/backspace + lmb.
