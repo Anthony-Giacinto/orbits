@@ -60,8 +60,7 @@ Project was created with:
 
 * Scenario Menu: Will build the chosen scenario from the menu, or will allow you to create your own scenario.
 * Body Menu: Allows you to place objects into the scenario. Can choose from some preset planets or can create your own object.
-* Toggle Axes: Toggles on/off cartesian axes on the primary body in the scenario.    
-
+* Toggle Axes: Toggles on/off cartesian axes on the primary body in the scenario.
 * Rotate the camera: Rmb and drag or ctrl + lmb.
 * Zoom in/out: Use the mouse scroll wheel or alt + lmb.
 * Delete objects: Delete/backspace + lmb.
