@@ -22,6 +22,9 @@ Functions:
     semi_latus_rectum: Finds the semilatus rectum of the orbit using angular momentum and the gravitational parameter.
     semi_major_axis: Finds the semi-major axis of the orbit.
     mechanical_energy: Finds the specific mechanical energy of the orbit.
+    station_location: Finds the position vector of a ground station in the geocentric-equatorial frame from its
+    latitude, elevation above sea level, and the local sidereal time assuming an ellipsoidal Earth.
+    inclination_from_launch: Finds the inclination of a spacecraft launched with a specific latitude and azimuth.
     flight_time: Finds the time of flight between two points along an object's orbit.
     kepler_problem: If given initial position and velocity vectors and a time of flight, this function will
     calculate the final position and velocity vectors using the universal variable formulation
@@ -275,6 +278,43 @@ def mechanical_energy(position_magnitude, velocity_magnitude, gravitational_para
     """
 
     return velocity_magnitude**2/2 - gravitational_parameter/position_magnitude
+
+
+def station_position(latitude, elevation, local_sidereal_time, degrees=False):
+    """ Finds the position vector of the ground station in the geocentric-equatorial frame from its
+    latitude, elevation above sea level, and the local sidereal time assuming an ellipsoidal Earth.
+
+    :param latitude: (float) The latitude of the ground station.
+    :param elevation: (float) The elevation above sea level of the ground station.
+    :param local_sidereal_time: (float) The local sidereal time of the ground station; this is the
+    Greenwich sidereal time plus the longitude of the station measured eastward from Greenwich, where the
+    Greenwich sidereal time is the angle from the vernal equinox direction to the Greenwich meridian.
+    :param degrees: (bool) True if all angles are given in degrees, False if radians (default is False).
+    :return: (numpy array) The position vector of the ground station in the geocentric-equatorial frame.
+    """
+
+    if degrees:
+        lat = math.radians(latitude)
+        lst = math.radians(local_sidereal_time)
+    else:
+        lat = latitude
+        lst = local_sidereal_time
+
+    denominator = (1 - Earth.ellipsoid_eccentricity**2*(math.sin(lat))**2)**0.5
+    x = math.cos(lat)*(Earth.equatorial_radius/denominator + elevation)
+    z = math.sin(lat)*(Earth.polar_radius*(1 - Earth.ellipsoid_eccentricity**2)/denominator + elevation)
+    return np.array([x*math.cos(lst), x*math.sin(lst), z])
+
+
+def inclination_from_launch(latitude, azimuth):
+    """ Finds the inclination of a spacecraft launched with a specific latitude and azimuth.
+
+    :param latitude: (float) The latitude of the launch site in radians.
+    :param azimuth: (float) The azimuth of the launch in radians.
+    :return: (float) Inclination in radians.
+    """
+
+    return math.acos(math.sin(azimuth)*math.cos(latitude))
 
 
 def period(semi_major_axis, gravitational_parameter=__earth):

@@ -19,8 +19,7 @@ import math
 import numpy as np
 from orbits.astro.params import Earth
 from orbits.astro.afunc import orbital_radius, angular_momentum, node_vector, eccentricity_vector, \
-    semi_latus_rectum, semi_major_axis, mechanical_energy
-from orbits.astro.rfunc import station_position
+    semi_latus_rectum, semi_major_axis, mechanical_energy, station_position
 from orbits.astro.transf import peri_to_geo, peri_to_geo_i, peri_to_geo_e, topo_to_geo
 
 
