@@ -38,10 +38,10 @@ Screenshot of over 2600 satellites orbiting Earth using real satellite data.
 ## Features
 * Can animate trajectories of objects in space.
 * Contains many useful astrodynamics functions.
-* Can animate orbit transfers and plane changes (hohmann transfer, bi-elliptic transfer, general transfer, simple plane change).
-* Can calculate the necessary delta-v and burn angle for certain orbit transfers.
+* Can animate orbit transfers and plane changes (hohmann transfer, bi-elliptic transfer, general orbit transfer, simple plane change).
+* Can calculate the necessary delta-v and burn angle for the above maneuvers.
 * Can determine the position and velocity vectors of an orbiting object (Geocentric-Equatorial frame) from given radar measurements.
-* Can determine the position and velocity vectors of an orbiting object (Geocentric-Equatorial frame) from given classical orbit elements and vice versa.
+* Can determine the position and velocity vectors of an orbiting object (Geocentric-Equatorial frame) from given classical orbital elements and vice versa.
 * Deals with orbit perturbations by using Cowell's method.
 
 ## Controls
