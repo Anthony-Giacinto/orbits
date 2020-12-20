@@ -511,6 +511,7 @@ class Controls(AttributeManager, LocationManager):
                 self.sphere_value_reset()
                 self.create_caption(('vectors_block', 'starting_time_block'))
                 self.body_menu.selected = m.selected
+                self.vector_menu.selected = 'Vectors'
                 self.maneuver_menu.disabled = True
                 if self.scenario_running:
                     self.scene_height_sub = self.canvas_build_height_sub
@@ -525,6 +526,7 @@ class Controls(AttributeManager, LocationManager):
                 self.body_menu.selected = m.selected
                 self.create_caption(('vectors_block', 'starting_time_block'))
                 self.maneuver_menu.disabled = True
+                self.vector_menu.selected = 'Vectors'
                 if self.scenario_running:
                     self.scene_height_sub = self.canvas_build_height_sub
         else:
@@ -544,6 +546,7 @@ class Controls(AttributeManager, LocationManager):
                 self.name = str(preset())
                 self.texture = preset.texture
                 self.create_caption(('vectors_block', 'starting_time_block'))
+                self.vector_menu.selected = 'Vectors'
                 self.vector_menu.disabled = self.create_body.disabled = self.maneuver_menu.disabled = True
                 self.previous_sphere = self.primary = Sphere(pos=(0, 0, 0), vel=(0, 0, 0), preset=preset,
                                                              show_axes=self.axes)
