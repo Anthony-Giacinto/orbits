@@ -279,16 +279,21 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
 
         pos = vector(round(self._position.x, places), round(self._position.y, places), round(self._position.z, places))
         vel = vector(round(self._velocity.x, places), round(self._velocity.y, places), round(self._velocity.z, places))
-        if self.mass > 1000:
+        if self.mass > 9999:
             m = '{:e}'.format(self.mass)
         else:
             m = self.mass
+        if self.radius > 9999:
+            rad = '{:e}'.format(self.radius)
+        else:
+            rad = self.radius
         name =     f'Name:      {self.name}'
         primary =  f'Primary:   {self.primary}'
         position = f'Position:  {pos} km'
         velocity = f'Velocity:  {vel} km/s'
         mass =     f'Mass:      {m} kg'
-        return '\n'.join([name, primary, position, velocity, mass])
+        radius =   f'Radius     {rad} km'
+        return '\n'.join([name, primary, position, velocity, mass, radius])
 
     def __make_label(self):
         self.label = label(text=self.__label_text(), align='left', height=20,
