@@ -7,6 +7,7 @@ This project allows the user to simulate the trajectories of objects in space in
 * [Technologies](#technologies)
 * [Features](#features)
 * [Widgets](#widgets)
+* [Controls](#controls)
 * [How to Use](#how-to-use)
 
 ## General Info
@@ -49,18 +50,24 @@ Project was created with:
 * Deals with orbit perturbations by using Cowell's method.
 
 ## Widgets
-* Run Scenario / End Scenario Button: Starts and ends the simulation.
-* Pause / Play Button: Pauses and plays the simulation after it has begun.
+* Run Scenario/End Scenario Button: Starts and ends the simulation.
+* Pause/Play Button: Pauses and plays the simulation after it has begun.
 * Reset Button: Resets the GUI back to the start up GUI.
 * Following Input: Enter the name of the object that you want the camera to focus on.
 * Time Step Input: The amount of time that passes between each new position determination in seconds. The smaller the value the more accurate the simulate will be. Cannot be larger than the Time Rate value (default value is 1.0 s).
-* Time Rate Input: The amount of simulation time that passes every Time Step in chosen units per Time Step. Increase this value to increase the rate of simulation time. Cannot be smaller than the Time Step value (default value is 1 second / Time Step).
+* Time Rate Input: The amount of simulation time that passes every Time Step in chosen units per Time Step. Increase this value to increase the rate of simulation time. Cannot be smaller than the Time Step value (default value is 1 second/Time Step).
 
     * Notes on Time Step and Time Rate: Increasing either the Time Rate or the Time Step will "increase" the rate of simulation time, but it is recommended to just use Time    Rate. However, increasing Time Rate will only work up to some limit. If you wish to increase the rate of simulation time further, you will also need to increase the Time Step. Keep in mind that the larger the Time Step value, the less accurate the position data of the objects will be.
 
 * Scenario Menu: Will build the chosen scenario from the menu, or will allow you to create your own scenario.
 * Body Menu: Allows you to place objects into the scenario. Can choose from some preset planets or can create your own object.
-* Toggle Axes: Toggles on/off cartesian axes on the primary body in the scenario.
+* Toggle Axes: Toggles on/off cartesian axes on the primary body in the scenario.    
+
+## Controls
+* Rotate the camera: Rmb and drag or ctrl + lmb.
+* Zoom in/out: Use the mouse scroll wheel or alt + lmb.
+* Delete objects: Delete/backspace + lmb.
+* Access info on object: Lmb.
 
 ## How to Use
 * Choose a scenario
