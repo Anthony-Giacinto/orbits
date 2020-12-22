@@ -11,7 +11,6 @@ This project allows the user to simulate the trajectories of objects in space in
 
 ## General Info
 * This project was created with Python 3.7 in mind.
-* The recommended browsers to use are Microsoft Edge and Google Chrome.
 * The browser GUI was built using VPython:
     * https://www.glowscript.org/docs/VPythonDocs/index.html
 * To run the GUI:
