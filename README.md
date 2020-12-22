@@ -3,6 +3,7 @@ This project allows the user to simulate the trajectories of objects in space in
 
 ## Table of Contents
 * [General info](#general-info)
+* [Installation](#installation)
 * [Screenshot](#screenshot)
 * [Features](#features)
 * [Controls](#controls)
@@ -13,16 +14,13 @@ This project allows the user to simulate the trajectories of objects in space in
 * The recommended browsers to use are Microsoft Edge and Google Chrome.
 * The browser GUI was built using VPython:
     * https://www.glowscript.org/docs/VPythonDocs/index.html
-* On first use, must:
-    1. Copy the .../files/images folder and place it in the VPython package folder .../Lib/site-packages/vpython/vpython_data/ .
-    2. Copy everything else from .../files/ and place them in .../Lib/site-packages/vpython/vpython_libraries/ to replace the default files.
 * To run the GUI:
 
         import orbits as orb  
         orb.Simulate()
 * To exit the Gui, just close the browser window.
 * Can perform astrodynamics calculations without the GUI:
-        
+
         import orbits as orb
         orb.astro."function"
     
@@ -31,6 +29,19 @@ This project allows the user to simulate the trajectories of objects in space in
         import orbits.astro as astro
         astro."function"
 
+## Installation
+On first use, must:  
+   * Copy the .../files/images folder and place it in the VPython package folder .../Lib/site-packages/vpython/vpython_data/ .
+   * Copy everything else from .../files/ and place them in .../Lib/site-packages/vpython/vpython_libraries/ to replace the default files.
+  
+Requirements:
+   * vpython==7.6.1
+   * numpy==1.19.2
+   * astropy==4.1
+   * pandas==1.1.3
+   * xlrd==1.2.0
+   * pyautogui==0.9.52
+   
 ## Screenshot
 Screenshot of over 2600 satellites orbiting Earth using real satellite data.
 ![satellites](/files/screenshots/satellites.png)
