@@ -52,7 +52,9 @@ Screenshot of over 2600 satellites orbiting Earth using real satellite data.
 * Time Step Input: The amount of time that passes between each new position determination in seconds. The smaller the value the more accurate the simulate will be. Cannot be larger than the Time Rate value (default value is 1.0 s).
 * Time Rate Input: The amount of simulation time that passes every Time Step in chosen units per Time Step. Increase this value to increase the rate of simulation time. Cannot be smaller than the Time Step value (default value is 1 second/Time Step).
 
-    * Notes on Time Step and Time Rate: Increasing either the Time Rate or the Time Step will "increase" the rate of simulation time, but it is recommended to just use Time    Rate. However, increasing Time Rate will only work up to some limit. If you wish to increase the rate of simulation time further, you will also need to increase the Time Step. Keep in mind that the larger the Time Step value, the less accurate the position data of the objects will be.
+    * Notes on Time Step and Time Rate: 
+        * Increasing either the Time Rate or the Time Step will "increase" the rate of simulation time, but it is recommended to just use Time    Rate. However, increasing Time Rate will only work up to some limit. If you wish to increase the rate of simulation time further, you will also need to increase the Time Step. Keep in mind that the larger the Time Step value, the less accurate the position data of the objects will be.
+        * A sudden large increase in Time Rate or Time Step can cause objects to jump to their next position instead of smoothly moving along its path. It is therefore recommended to increase these values slowly if accuracy is important.
 
 * Scenario Menu: Will build the chosen scenario from the menu, or will allow you to create your own scenario.
 * Body Menu: Allows you to place objects into the scenario. Can choose from some preset planets or can create your own object.
