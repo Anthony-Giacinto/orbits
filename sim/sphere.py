@@ -42,9 +42,10 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
         (default is None).
         show_axes: (bool) If True, will display the cartesian axes and labels of the sphere;
         can be removed and/or replaced afterwards using toggle_axes() (default is False).
-        obliquity: The angle of obliquity in radians (default is 0).
+        obliquity: (float) The angle of obliquity in radians (default is 0).
+        real_radius: (float) The radius value that is used in collision calculations (default is radius).
 
-        The parameters from simple_sphere, sphere, Elements, and Maneuver are also available.
+        The parameters from simple_sphere, sphere, and Maneuver are also available.
 
     Class Methods:
         rotate: Rotates the Sphere about its axis.
@@ -61,7 +62,7 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
 
     def __init__(self, vel=(0.0,0.0,0.0), mass=1.0, rotation_speed=0.0, name='Sphere', simple=False, massive=True,
                  labelled=False, luminous=False, primary=None, light_color='white', impulses=None, maneuver=None,
-                 preset=None, show_axes=False, obliquity=0, **kwargs):
+                 preset=None, show_axes=False, obliquity=0, real_radius=None, **kwargs):
         """
         :param pos: (tuple/VPython vector) Position of the sphere; if primary is given, will be w.r.t the primary
         (default is vector(0, 0, 0)).
@@ -86,10 +87,10 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
         (default is None).
         :param show_axes: (bool) If True, will display the cartesian axes and labels of the sphere;
         can be removed and/or replaced afterwards using toggle_axes() (default is False).
-        :param obliquity: The angle of obliquity in radians (default is 0).
+        :param obliquity: (float) The angle of obliquity in radians (default is 0).
+        :param real_radius: (float) The radius value that is used in collision calculations (default is radius).
 
-
-        The parameters from simple_sphere, sphere, Elements, and Maneuver are also available.
+        The parameters from simple_sphere, sphere, and Maneuver are also available.
         """
 
         self.primary = primary
@@ -138,21 +139,11 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
             except TypeError:
                 self.times = [self.impulses[0]]
 
-        # If any of the below attributes are given, will calculate the associated pos and vel values.
-        if ('semi_latus_rectum' or 'eccentricity' or 'inclination' or 'longitude_of_ascending_node'
-            or 'periapsis_angle' or 'epoch_angle') in keys:
-            attrs = ['semi_latus_rectum', 'eccentricity', 'inclination', 'longitude_of_ascending_node',
-                     'periapsis_angle', 'epoch_angle']
-            elements = [kwargs.pop(elem) for elem in attrs if elem in keys]
-            Elements.__init__(self, *elements, gravitational_parameter=self.primary.grav_parameter)
-            self._vel = self._velocity = self.vpython_rotation(self.velocity)
-            kwargs['pos'] = self._position = self.vpython_rotation(self.position)
+        self._vel = self._velocity = self.vpython_rotation(self.__try_vector(vel))
+        if 'pos' in keys:
+            self._position = kwargs['pos'] = self.vpython_rotation(self.__try_vector(kwargs['pos']))
         else:
-            self._vel = self._velocity = self.vpython_rotation(self.__try_vector(vel))
-            if 'pos' in keys:
-                self._position = kwargs['pos'] = self.vpython_rotation(self.__try_vector(kwargs['pos']))
-            else:
-                self._position = vector(0, 0, 0)
+            self._position = vector(0, 0, 0)
 
         # If primary is another Sphere, pos and vel are with respect to the primary;
         # This will update pos and vel to be with respect to the origin of the VPython reference frame and will
@@ -179,21 +170,25 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
         kwargs['shininess'] = self.shininess
         kwargs['up'] = self.up
         if simple:
-            self._type = 'simple_sphere'
             simple_sphere.__init__(self, **kwargs)
         else:
-            self._type = 'sphere'
             sphere.__init__(self, **kwargs)
 
         self._luminous = self.emissive = luminous
         if self._luminous:
             self.__make_light()
+
         if self._labelled:
             self.__make_label()
 
         self.show_axes = show_axes
         if self.show_axes:
             self.__axes()
+
+        if real_radius:
+            self.real_radius = real_radius
+        else:
+            self.real_radius = self.radius
 
     def __str__(self):
         return self.name
@@ -283,16 +278,16 @@ class Sphere(simple_sphere, sphere, Elements, Maneuver):
             m = '{:e}'.format(self.mass)
         else:
             m = self.mass
-        if self.radius > 9999:
-            rad = '{:e}'.format(self.radius)
+        if self.real_radius > 9999:
+            rad = '{:e}'.format(self.real_radius)
         else:
-            rad = self.radius
+            rad = self.real_radius
         name =     f'Name:      {self.name}'
         primary =  f'Primary:   {self.primary}'
         position = f'Position:  {pos} km'
         velocity = f'Velocity:  {vel} km/s'
         mass =     f'Mass:      {m} kg'
-        radius =   f'Radius     {rad} km'
+        radius =   f'Radius:    {rad} km'
         return '\n'.join([name, primary, position, velocity, mass, radius])
 
     def __make_label(self):

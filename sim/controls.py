@@ -44,7 +44,9 @@ class AttributeManager:
                  'year_input': None, 'month_input': None, 'day_input': None, 'hour_input': None, 'minute_input': None,
                  'second_input': None, 'maneuver_year': None,  'maneuver_month': None, 'maneuver_day': None,
                  'maneuver_hour': None, 'maneuver_minute': None, 'maneuver_second': None, 'time_units': 's',
-                 'time_rate_seconds': 1}
+                 'time_rate_seconds': 1,
+
+                 'collisions': False}
 
     sphere_value_dict = {'position': [0.0, 0.0, 0.0], 'velocity': [0.0, 0.0, 0.0], 'mass': 10.0, 'radius': 100.0,
                          'rotation': 0.0, 'semi_latus_rectum': 0.0, 'eccentricity': 0.0, 'inclination': 0.0,
@@ -82,7 +84,7 @@ class LocationManager:
 
     # Caption Rows:
     caption_row = {'scenario_menu_dropdown': 'scenario_menu', 'body_menu_dropdown': 'body_menu',
-                   'show_axes_checkbox': 'show_axes'}
+                   'show_axes_checkbox': 'show_axes', 'toggle_collisions_checkbox': 'toggle_collisions'}
 
     # Caption Blocks:
     starting_time_block = {'starting_time_block': [['start_time_menu_dropdown'],
@@ -207,6 +209,8 @@ class Controls(AttributeManager, LocationManager):
         self.scene.append_to_caption('\n' + '\u2501'*(math.floor(self.scene.width/self.pixel_per_space)) + '\n\n')
         if self.axes:
             self.show_axes.checked = True
+        if self.collisions:
+            self.toggle_collisions.checked = True
 
     def create_caption(self, block):
         self.create_caption_row()
@@ -336,6 +340,7 @@ class Controls(AttributeManager, LocationManager):
         for sph in self.spheres:
             if sph.name.lower() == w.text.lower():
                 self.scene.camera.follow(sph)
+                self.set_zoom(sph.radius, 3)
 
     def camera_follow_Winput(self):
         self.follow_text = wtext(text=' <b>Following: </b>', pos=self.scene.title_anchor)
@@ -381,7 +386,16 @@ class Controls(AttributeManager, LocationManager):
             self.primary.toggle_axes()
 
     def show_axes_checkbox(self):
-        self.show_axes = checkbox(pos=self.scene.caption_anchor, bind=self.show_axes_checkbox_func, text='Toggle Axes')
+        self.scene.append_to_caption('  ')
+        self.show_axes = checkbox(pos=self.scene.caption_anchor, bind=self.show_axes_checkbox_func, text='Axes')
+
+    def toggle_collisions_checkbox_func(self, c):
+        self.collisions = not self.collisions
+
+    def toggle_collisions_checkbox(self):
+        self.scene.append_to_caption('  ')
+        self.toggle_collisions = checkbox(pos=self.scene.caption_anchor, bind=self.toggle_collisions_checkbox_func,
+                                          text='Collisions')
 
     def loading(self, state):
         if state:

@@ -8,7 +8,7 @@ from orbits.astro.vectors import Elements, elements_multiple
 from orbits.astro.maneuvers import Hohmann, BiElliptic, GeneralTransfer, SimplePlaneChange
 
 
-def satellites(rows=30, radius=65.0, show_axes=False):
+def satellites(rows=30, radius=65.0, real_radius=5, show_axes=False):
     """ Animates satellite orbits around Earth with given satellite data. """
 
     row_indices = np.arange(rows)
@@ -20,12 +20,12 @@ def satellites(rows=30, radius=65.0, show_axes=False):
                                 longitude_of_ascending_node=loan, periapsis_angle=pa, epoch_angle=ea)
     spheres = [Sphere(preset=Earth, show_axes=show_axes)]
     for p, v, m, n in zip(vectors[0], vectors[1], masses, names):
-        spheres.append(Sphere(pos=p, vel=v, mass=m, radius=radius, name=n, massive=False,  primary=spheres[0],
-                              simple=True))
+        spheres.append(Sphere(pos=p, vel=v, mass=m, radius=radius, real_radius=real_radius, name=n, massive=False,
+                              primary=spheres[0], simple=True))
     return spheres
 
 
-def satellites_perturbed(rows=30, radius=65.0, perturbing_body=Moon, body_semi_latus_rectum=50000.0,
+def satellites_perturbed(rows=30, radius=65.0, real_radius=5, perturbing_body=Moon, body_semi_latus_rectum=50000.0,
                          body_eccentricity=0.2, show_axes=False):
     """ Animates satellite orbits around Earth with given satellite data along with perturbations
     added by another body. """
@@ -47,8 +47,8 @@ def satellites_perturbed(rows=30, radius=65.0, perturbing_body=Moon, body_semi_l
     spheres.append(Sphere(pos=positions.pop(), vel=velocities.pop(), preset=Moon, primary=spheres[0],
                           make_trail=True, retain=200, trail_color='red'))
     for p, v, m, n in zip(positions, velocities, masses, names):
-        spheres.append(Sphere(pos=p, vel=v, mass=m, radius=radius, name=n, massive=False, primary=spheres[0],
-                              simple=True))
+        spheres.append(Sphere(pos=p, vel=v, mass=m, radius=radius, real_radius=real_radius, name=n, massive=False,
+                              primary=spheres[0], simple=True))
     return spheres
 
 
