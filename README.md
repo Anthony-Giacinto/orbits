@@ -11,6 +11,8 @@ This project allows the user to simulate the trajectories of objects in space in
 ## General Info
 * This project was created with Python 3.7 .
 * The recommended browsers to use are Microsoft Edge and Google Chrome.
+* The browser GUI was built using VPython:
+    * https://www.glowscript.org/docs/VPythonDocs/index.html
 * On first use, must:
     1. Copy the .../files/images folder and place it in the VPython package folder .../Lib/site-packages/vpython/vpython_data/ .
     2. Copy everything else from .../files/ and place them in .../Lib/site-packages/vpython/vpython_libraries/ to replace the default files.
@@ -28,8 +30,6 @@ This project allows the user to simulate the trajectories of objects in space in
     
         import orbits.astro as astro
         astro."function"
-* The browser GUI was built using VPython:
-    * https://www.glowscript.org/docs/VPythonDocs/index.html
 
 ## Screenshot
 Screenshot of over 2600 satellites orbiting Earth using real satellite data.
