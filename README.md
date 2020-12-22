@@ -65,7 +65,8 @@ Screenshot of over 2600 satellites orbiting Earth using real satellite data.
 * Resize Window: Drag the lower right side of the canvas.
 * Delete objects: Delete/backspace + lmb on object.
 * Access info on object: Lmb on object.
-
+* Using input widgets: Type in your desired value, then press enter/return.
+   
 ## How to Use
 * Choose a scenario
     * Can choose between prebuilt scenarios or a custom scenario.  
