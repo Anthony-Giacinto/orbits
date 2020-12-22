@@ -62,6 +62,7 @@ Screenshot of over 2600 satellites orbiting Earth using real satellite data.
 * Collisions: Toggles collisions on/off in the scenario. Will make the simulation extremely slow if hundreds of objects are in the scene.
 * Rotate the camera: Rmb and drag or ctrl + lmb.
 * Zoom in/out: Use the mouse scroll wheel or alt + lmb.
+* Resize Window: Drag the lower right side of the canvas.
 * Delete objects: Delete/backspace + lmb on object.
 * Access info on object: Lmb on object.
 
