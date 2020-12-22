@@ -58,7 +58,8 @@ Screenshot of over 2600 satellites orbiting Earth using real satellite data.
 
 * Scenario Menu: Will build the chosen scenario from the menu, or will allow you to create your own scenario.
 * Body Menu: Allows you to place objects into the scenario. Can choose from some preset planets or can create your own object.
-* Toggle Axes: Toggles on/off cartesian axes on the primary body in the scenario.
+* Axes: Toggles on/off cartesian axes on the primary body in the scenario.
+* Collisions: Toggles collisions on/off in the scenario. Will make the simulation extremely slow if hundreds of objects are in the scene.
 * Rotate the camera: Rmb and drag or ctrl + lmb.
 * Zoom in/out: Use the mouse scroll wheel or alt + lmb.
 * Delete objects: Delete/backspace + lmb on object.
