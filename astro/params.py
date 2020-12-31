@@ -9,7 +9,7 @@ Units for the celestial bodies:
     angle: radians
 
 Functions:
-    gravity: The gravitational constant (default units: km**3*kg**-1*s**-2).
+    gravity: The gravitational constant in chosen units (default units: km**3*kg**-1*s**-2).
     convert_to_seconds: Converts time units to seconds.
     convert_to_km: Converts distance units to kilometers.
 
@@ -22,6 +22,10 @@ Classes:
     Moon
     Mars
     Jupiter
+    Io
+    Europa
+    Ganymede
+    Callisto
     Saturn
     Uranus
     Neptune
@@ -36,7 +40,7 @@ _earth_year = 365.256363004  # (days)
 
 
 def gravity(units='km'):
-    """ The gravitational constant (default units: km**3*kg**-1*s**-2).
+    """ The gravitational constant in chosen units (default units: km**3*kg**-1*s**-2).
 
     :param units: (str) 'km', 'm', or 'natural' units (default is 'km').
     :return: (float) The gravitational constant in the desired units.
@@ -81,8 +85,13 @@ class Textures:
     mars_8k = 'images/8k_mars.jpg'
     jupiter = 'images/2k_jupiter.jpg'
     jupiter_8k = 'images/8k_jupiter.jpg'
+    io = 'images/io.jpg'
+    europa = 'images/europa.jpg'
+    ganymede = 'images/ganymede.jpg'
+    callisto = 'images/callisto.jpg'
     saturn = 'images/2k_saturn.jpg'
     saturn_8k = 'images/8k_saturn.jpg'
+    saturn_ring = 'images/saturn_ring.jpg'
     uranus = 'images/2k_uranus.jpg'
     neptune = 'images/2k_neptune.jpg'
     ceres = 'images/4k_ceres_fictional.jpg'
@@ -272,7 +281,6 @@ class Moon:
 
     Notes:
         All orbital elements and obliquity are in relation to orbit around Earth.
-        Inclination is in relation to the ecliptic, however.
 
     Class Variables:
         radius: (float) The mean radius of the moon.
@@ -416,6 +424,178 @@ class Jupiter:
         return self.classname
 
 
+class Io:
+    """ Some io parameters taken from Wikipedia.
+    https://en.wikipedia.org/wiki/Io_(moon)
+
+    Notes:
+        All orbital elements and obliquity are in relation to orbit around Jupiter.
+
+    Class Variables:
+        radius: (float) The mean radius of io.
+        mass: (float) The mass of io.
+        orbital_period: (float) The orbital period of io.
+        sidereal_rotation_period: (float) The sidereal rotation period of io.
+        angular_rotation: (float) The angular speed of io about its axis.
+        gravitational_parameter: (float) The gravitational parameter of io.
+        semi_major_axis: (float) The semi-major axis of io's orbit.
+        eccentricity: (float) The eccentricity of io's orbit.
+        semi_latus_rectum: (float) The semilatus rectum of io's orbit.
+        inclination: (float) The inclination of io's orbit.
+        name: (str) The lowercase of 'Io'.
+        classname: (str) Name, but capitalized for string representation.
+        texture: (str) The io texture.
+        obliquity: (float) The obliquity of io with respect to its orbital plane.
+    """
+
+    radius = 1821.6
+    mass = 8.931938e22
+    orbital_period = convert_to_seconds(1.769137786, 'days')
+    sidereal_rotation_period = orbital_period
+    angular_rotation = 2*math.pi/sidereal_rotation_period
+    gravitational_parameter = gravity('km')*mass
+    eccentricity = 0.0041
+    semi_major_axis = 420000/(1-eccentricity)
+    semi_latus_rectum = semi_major_axis*(1-eccentricity**2)
+    inclination = math.radians(0.05)
+    name = 'io'
+    classname = name[0].upper() + name[1:]
+    texture = Textures.io
+    obliquity = math.radians(0)
+
+    def __str__(self):
+        return self.classname
+
+
+class Europa:
+    """ Some europa parameters taken from Wikipedia.
+    https://en.wikipedia.org/wiki/Europa_(moon)
+
+    Notes:
+        All orbital elements and obliquity are in relation to orbit around Jupiter.
+
+    Class Variables:
+        radius: (float) The mean radius of europa.
+        mass: (float) The mass of europa.
+        orbital_period: (float) The orbital period of europa.
+        sidereal_rotation_period: (float) The sidereal rotation period of europa.
+        angular_rotation: (float) The angular speed of europa about its axis.
+        gravitational_parameter: (float) The gravitational parameter of europa.
+        semi_major_axis: (float) The semi-major axis of europa's orbit.
+        eccentricity: (float) The eccentricity of europa's orbit.
+        semi_latus_rectum: (float) The semilatus rectum of europa's orbit.
+        inclination: (float) The inclination of europa's orbit.
+        name: (str) The lowercase of 'Europa'.
+        classname: (str) Name, but capitalized for string representation.
+        texture: (str) The europa texture.
+        obliquity: (float) The obliquity of europa with respect to its orbital plane.
+    """
+
+    radius = 1560.8
+    mass = 4.799844e22
+    orbital_period = convert_to_seconds(3.551181, 'days')
+    sidereal_rotation_period = orbital_period
+    angular_rotation = 2*math.pi/sidereal_rotation_period
+    gravitational_parameter = gravity('km')*mass
+    eccentricity = 0.009
+    semi_major_axis = 664862/(1-eccentricity)
+    semi_latus_rectum = semi_major_axis*(1-eccentricity**2)
+    inclination = math.radians(0.470)
+    name = 'europa'
+    classname = name[0].upper() + name[1:]
+    texture = Textures.europa
+    obliquity = math.radians(0.1)
+
+    def __str__(self):
+        return self.classname
+
+
+class Ganymede:
+    """ Some ganymede parameters taken from Wikipedia.
+    https://en.wikipedia.org/wiki/Ganymede_(moon)
+
+    Notes:
+        All orbital elements and obliquity are in relation to orbit around Jupiter.
+
+    Class Variables:
+        radius: (float) The mean radius of ganymede.
+        mass: (float) The mass of ganymede.
+        orbital_period: (float) The orbital period of ganymede.
+        sidereal_rotation_period: (float) The sidereal rotation period of ganymede.
+        angular_rotation: (float) The angular speed of ganymede about its axis.
+        gravitational_parameter: (float) The gravitational parameter of ganymede.
+        semi_major_axis: (float) The semi-major axis of ganymede's orbit.
+        eccentricity: (float) The eccentricity of ganymede's orbit.
+        semi_latus_rectum: (float) The semilatus rectum of ganymede's orbit.
+        inclination: (float) The inclination of ganymede's orbit.
+        name: (str) The lowercase of 'Ganymede'.
+        classname: (str) Name, but capitalized for string representation.
+        texture: (str) The ganymede texture.
+        obliquity: (float) The obliquity of ganymede with respect to its orbital plane.
+    """
+    
+    radius = 2634.1
+    mass = 1.4819e23
+    orbital_period = convert_to_seconds(7.15455296, 'days')
+    sidereal_rotation_period = orbital_period
+    angular_rotation = 2*math.pi/sidereal_rotation_period
+    gravitational_parameter = gravity('km')*mass
+    semi_major_axis = 1070400
+    eccentricity = 0.0013
+    semi_latus_rectum = semi_major_axis*(1-eccentricity**2)
+    inclination = math.radians(0.2)
+    name = 'ganymede'
+    classname = name[0].upper() + name[1:]
+    texture = Textures.ganymede
+    obliquity = math.radians(0)
+
+    def __str__(self):
+        return self.classname
+
+
+class Callisto:
+    """ Some ganymede parameters taken from Wikipedia.
+    https://en.wikipedia.org/wiki/Callisto_(moon)
+
+    Notes:
+        All orbital elements and obliquity are in relation to orbit around Jupiter.
+
+    Class Variables:
+        radius: (float) The mean radius of callisto.
+        mass: (float) The mass of callisto.
+        orbital_period: (float) The orbital period of callisto.
+        sidereal_rotation_period: (float) The sidereal rotation period of callisto.
+        angular_rotation: (float) The angular speed of callisto about its axis.
+        gravitational_parameter: (float) The gravitational parameter of callisto.
+        semi_major_axis: (float) The semi-major axis of callisto's orbit.
+        eccentricity: (float) The eccentricity of callisto's orbit.
+        semi_latus_rectum: (float) The semilatus rectum of callisto's orbit.
+        inclination: (float) The inclination of callisto's orbit.
+        name: (str) The lowercase of 'Callisto'.
+        classname: (str) Name, but capitalized for string representation.
+        texture: (str) The callisto texture.
+        obliquity: (float) The obliquity of callisto with respect to its orbital plane.
+    """
+
+    radius = 2410.3
+    mass = 1.075938e23
+    orbital_period = convert_to_seconds(16.6890184, 'days')
+    sidereal_rotation_period = orbital_period
+    angular_rotation = 2*math.pi/sidereal_rotation_period
+    gravitational_parameter = gravity('km')*mass
+    semi_major_axis = 1882700
+    eccentricity = 0.0074
+    semi_latus_rectum = semi_major_axis*(1-eccentricity**2)
+    inclination = math.radians(0.192)
+    name = 'callisto'
+    classname = name[0].upper() + name[1:]
+    texture = Textures.callisto
+    obliquity = math.radians(0)
+
+    def __str__(self):
+        return self.classname
+
+
 class Saturn:
     """ Some saturn parameters taken from Wikipedia.
     https://en.wikipedia.org/wiki/Saturn
@@ -442,6 +622,9 @@ class Saturn:
         texture: (str) The saturn texture.
         texture_8k: (str) An 8k version of texture.
         obliquity: (float) The obliquity of saturn with respect to its orbital plane.
+        ring_inner: (int) Approximate starting distance of saturn's ring system from center of saturn.
+        ring_outer: (int) Approximate ending distance of saturn's ring system from center of saturn.
+        ring_texture: (str) The ring texture.
     """
 
     radius = 58232
@@ -461,6 +644,9 @@ class Saturn:
     texture = Textures.saturn
     texture_8k = Textures.saturn_8k
     obliquity = math.radians(26.73)
+    ring_inner = 66900
+    ring_outer = 140180
+    ring_texture = Textures.saturn_ring
 
     def __str__(self):
         return self.classname
