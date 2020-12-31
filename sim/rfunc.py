@@ -116,3 +116,7 @@ def random_element_angles(num, step=0.05):
         pa.append(random.choice(angles))
         ea.append(random.choice(angles))
     return loan, pa, ea
+
+
+def vector_to_np(vector):
+    return np.array([vector.x, vector.y, vector.z])

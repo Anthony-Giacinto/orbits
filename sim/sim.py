@@ -1,26 +1,23 @@
 import datetime
 import pyautogui
-import numpy as np
-from vpython import vector, canvas, rate, mag, label, norm
+from vpython import canvas, rate, label, vector, mag, hat, cross
 from orbits.sim.controls import Controls
-from orbits.sim.rfunc import decimal_length, round_to_place, integer_length
 from orbits.astro.transf import rodrigues_rotation
+from orbits.sim.rfunc import decimal_length, round_to_place, integer_length, vector_to_np
 from orbits.astro.maneuvers import Hohmann, BiElliptic, GeneralTransfer, SimplePlaneChange
 
 
 class Simulate:
     """ Simulates a system of orbiting spheres within VPython using Newton's Law of Universal Gravitation. """
 
-    _time_stamp = None
-    _screen_width, _screen_height = pyautogui.size()
-
     def __init__(self):
+        self._screen_width, self._screen_height = pyautogui.size()
         self._scene = canvas(width=self._screen_width-20)
         self._scene.lights[1].visible = False
         self._scene.lights.pop(1)
-        #self._scene.resizable = False
         self._controls = Controls(self._scene)
         self._gravity = self._controls.gravity
+        self._time_stamp = None
         while True:
             self.__build_scenario()
             self.__simulate_scenario()
@@ -57,11 +54,8 @@ class Simulate:
         """ Applies an impulse to the desired sphere. To be used in __update_spheres(). """
 
         for index, time in enumerate(sphere.times):
-            time_delta1 = self._time - self._start_time
-            time_delta2 = time - self._start_time
-            seconds1 = time_delta1.total_seconds()
-            seconds2 = time_delta2.total_seconds()
-
+            seconds1 = (self._time - self._start_time).total_seconds()
+            seconds2 = (time - self._start_time).total_seconds()
             if self._dt < 0:
                 round(seconds2, decimal_length(self._dt))
             elif self._dt > 0:
@@ -69,33 +63,21 @@ class Simulate:
                 seconds2 = round_to_place(seconds2, integer_length(self._dt) + 1)
 
             if seconds1 == seconds2:
-
                 if isinstance(sphere.impulses[0], tuple):
                     delta_v = sphere.impulses[index][1]
                     burn_angle = sphere.impulses[index][2]
                 else:
                     delta_v = sphere.impulses[1]
                     burn_angle = sphere.impulses[2]
-                v = delta_v*norm(sphere.vel)
 
-                man = sphere.maneuver
-                if man is Hohmann or man is BiElliptic:
-                    sphere.vel += v + sphere.primary.vel
-
-                elif man is GeneralTransfer:
-                    v_np = np.array([v.x, v.y, v.z])
-                    pos, vel = norm(sphere._position), norm(sphere._velocity)
-                    pos, vel = np.array([pos.x, pos.y, pos.z]), np.array([vel.x, vel.y, vel.z])
-                    sphere.vel += vector(*rodrigues_rotation(np.cross(pos, vel), burn_angle).dot(v_np))
-                    sphere.vel += sphere.primary.vel
-
-                elif man is SimplePlaneChange:
-                    v_np = np.array([v.x, v.y, v.z])
-                    pos = norm(sphere._position)
-                    pos = np.array([pos.x, pos.y, pos.z])
-                    sphere.vel += vector(*rodrigues_rotation(pos, burn_angle).dot(v_np))
-                    sphere.vel += sphere.primary.vel
-
+                if sphere.maneuver is Hohmann or sphere.maneuver is BiElliptic:
+                    sphere.vel += delta_v*hat(sphere.vel) + sphere.primary.vel
+                elif sphere.maneuver is GeneralTransfer:
+                    axis = vector_to_np(hat(cross(sphere._position, sphere._velocity)))
+                    sphere.vel += vector(*rodrigues_rotation(axis, burn_angle).dot(vector_to_np(delta_v*hat(sphere.vel)))) + sphere.primary.vel
+                elif sphere.maneuver is SimplePlaneChange:
+                    axis = vector_to_np(hat(sphere._position))
+                    sphere.vel += vector(*rodrigues_rotation(axis, burn_angle).dot(vector_to_np(delta_v*hat(sphere.vel)))) + sphere.primary.vel
                 else:
                     #  If the user gives their own impulse instructions without a known maneuver title.
                     pass

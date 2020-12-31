@@ -44,9 +44,7 @@ class AttributeManager:
                  'year_input': None, 'month_input': None, 'day_input': None, 'hour_input': None, 'minute_input': None,
                  'second_input': None, 'maneuver_year': None,  'maneuver_month': None, 'maneuver_day': None,
                  'maneuver_hour': None, 'maneuver_minute': None, 'maneuver_second': None, 'time_units': 's',
-                 'time_rate_seconds': 1,
-
-                 'collisions': False}
+                 'time_rate_seconds': 1, 'collisions': False, 'preset': None}
 
     sphere_value_dict = {'position': [0.0, 0.0, 0.0], 'velocity': [0.0, 0.0, 0.0], 'mass': 10.0, 'radius': 100.0,
                          'rotation': 0.0, 'semi_latus_rectum': 0.0, 'eccentricity': 0.0, 'inclination': 0.0,
@@ -455,9 +453,12 @@ class Controls(AttributeManager, LocationManager):
         elif m.selected == 'Earth and Moon':
             preset(presets.earth_moon, show_axes=self.axes)
 
+        elif m.selected == 'Galilean Moons':
+            preset(presets.galilean_moons, show_axes=self.axes)
+
     def scenario_menu_dropdown(self):
         c = ['Choose Scenario...', 'Create Scenario', 'Earth Satellites', 'Earth Satellites Perturbed',
-             'Earth and Moon', *list(self.preset_maneuvers_dict.keys())]
+             'Earth and Moon', 'Galilean Moons', *list(self.preset_maneuvers_dict.keys())]
         self.scenario_menu = menu(choices=c, bind=self.scenario_menu_func)
 
     def start_time_menu_func(self, m):
@@ -531,12 +532,12 @@ class Controls(AttributeManager, LocationManager):
                     self.scene_height_sub = self.canvas_build_height_sub
             else:
                 self.sphere_value_reset()
-                preset = self.preset_bodies_dict[m.selected]
-                self.mass = preset.mass
-                self.radius = preset.radius
-                self.rotation = preset.angular_rotation
-                self.name = str(preset())
-                self.texture = preset.texture
+                self.preset = self.preset_bodies_dict[m.selected]
+                self.mass = self.preset.mass
+                self.radius = self.preset.radius
+                self.rotation = self.preset.angular_rotation
+                self.name = str(self.preset())
+                self.texture = self.preset.texture
                 self.body_menu.selected = m.selected
                 self.create_caption(('vectors_block', 'starting_time_block'))
                 self.maneuver_menu.disabled = True
@@ -553,17 +554,18 @@ class Controls(AttributeManager, LocationManager):
                 self.maneuver_menu.disabled = True
                 self.vector_menu.selected = 'Vectors'
             else:
-                preset = self.preset_bodies_dict[m.selected]
-                self.mass = preset.mass
-                self.radius = preset.radius
-                self.rotation = preset.angular_rotation
-                self.name = str(preset())
-                self.texture = preset.texture
+                self.preset = self.preset_bodies_dict[m.selected]
+                self.mass = self.preset.mass
+                self.radius = self.preset.radius
+                self.rotation = self.preset.angular_rotation
+                self.name = str(self.preset())
+                self.texture = self.preset.texture
                 self.create_caption(('vectors_block', 'starting_time_block'))
                 self.vector_menu.selected = 'Vectors'
                 self.vector_menu.disabled = self.create_body.disabled = self.maneuver_menu.disabled = True
-                self.previous_sphere = self.primary = Sphere(pos=(0, 0, 0), vel=(0, 0, 0), preset=preset,
+                self.previous_sphere = self.primary = Sphere(pos=(0, 0, 0), vel=(0, 0, 0), preset=self.preset,
                                                              show_axes=self.axes)
+                self.preset = None
                 self.spheres.append(self.primary)
                 if m.selected == 'Sun':
                     self.scene.lights[0].visible = False
@@ -961,7 +963,7 @@ class Controls(AttributeManager, LocationManager):
 
     def create_body_func(self):
         kwargs = {'mass': self.mass, 'radius': self.radius, 'rotation_speed': self.rotation, 'texture': self.texture,
-                  'make_trail': True, 'retain': 200, 'name': self.name, 'primary': self.primary,
+                  'make_trail': True, 'retain': 200, 'name': self.name, 'primary': self.primary, 'preset': self.preset,
                   'maneuver': self.maneuver, 'initial_radius': self.initial_radius, 'final_radius': self.final_radius,
                   'transfer_apoapsis': self.transfer_apoapsis, 'transfer_eccentricity': self.transfer_eccentricity,
                   'inclination_change': self.inclination_change}
@@ -1007,6 +1009,7 @@ class Controls(AttributeManager, LocationManager):
             if self.previous_sphere is self.primary:
                 self.previous_sphere.toggle_axes()
 
+        self.preset = None
         self.sphere_value_reset()
         self.create_caption_row()
         if self.scenario_running:
