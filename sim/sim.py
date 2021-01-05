@@ -86,31 +86,29 @@ class Simulate:
         """
         Checks if the radii of any of the spheres intersect. If they do, applies a perfectly inelastic collision.
         The sphere with the greater mass, survives. To be used in __update_spheres().
-        
+
         :return: (list) A list of Spheres that need to be removed from self._spheres due to collisions.
         """
 
-        def f(left_over, destroyed):
-            left_over.vel = (left_over.mass*left_over.vel + destroyed.mass*destroyed.vel) / \
-                            (left_over.mass + destroyed.mass)
-            left_over.mass += destroyed.mass
-            deleted.append(destroyed)
-            destroyed.delete()
-            if destroyed == self._controls.labelled_sphere:
+        def f(winner, loser):
+            winner.vel = (winner.mass*winner.vel + loser.mass*loser.vel)/(winner.mass + loser.mass)
+            winner.mass += loser.mass
+            self._collided.add(loser)
+            loser.delete()
+            if loser == self._controls.labelled_sphere:
                 self._controls.labelled_sphere = False
 
-        deleted = []
         for sph2 in self._spheres:
             self._collisions = self._controls.collisions
             if self._collisions and self._controls.running:
-                if (sph1 is not sph2) and (sph1.real_radius + sph2.real_radius > mag(sph1.pos - sph2.pos)):
+                if (sph1 is not sph2) and (sph2 not in self._collided) and (sph1.real_radius + sph2.real_radius > mag(sph1.pos - sph2.pos)):
                     if sph1.mass > sph2.mass:
                         f(sph1, sph2)
                     elif sph1.mass < sph2.mass:
                         f(sph2, sph1)
                     else:
-                        deleted.append(sph1)
-                        deleted.append(sph2)
+                        self._collided.add(sph1)
+                        self._collided.add(sph2)
                         if sph1 == self._controls.labelled_sphere or sph2 == self._controls.labelled_sphere:
                             self._controls.labelled_sphere = False
                         sph1.delete()
@@ -120,28 +118,27 @@ class Simulate:
             elif not self._controls.running:
                 while not self._controls.running:
                     pass
-        return deleted
 
     def __update_spheres(self):
         """ Updates the sphere values. """
 
-        deleted = []
+        self._collided = set()
         for sph, forces in zip(self._spheres, self.__update_forces()):
             sph.vel += forces*self._dt/sph.mass
 
             if sph.impulses:
                 self.__apply_impulse(sph)
 
-            if self._collisions:
-                deleted = self.__check_collisions(sph)
+            if self._collisions and sph not in self._collided:
+                self.__check_collisions(sph)
 
             sph.pos += sph.vel*self._dt
 
             if sph.rotation_speed:
                 sph.rotate(angle=sph.rotation_speed*self._dt)
 
-        if len(deleted):
-            for sph in deleted:
+        if len(self._collided):
+            for sph in self._collided:
                 self._spheres.remove(sph)
 
     def __build_scenario(self):
