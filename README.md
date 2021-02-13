@@ -4,6 +4,7 @@ This project allows the user to simulate the trajectories of objects in space in
 ## Table of Contents
 * [General info](#general-info)
 * [Installation](#installation)
+* [Requirements](#requirements)
 * [Screenshot](#screenshot)
 * [Features](#features)
 * [Controls](#controls)
@@ -33,7 +34,7 @@ On first use, must:
    * Copy the .../files/images folder and place it in the VPython package folder .../Lib/site-packages/vpython/vpython_data/ .
    * Copy everything else from .../files/ and place them in .../Lib/site-packages/vpython/vpython_libraries/ to replace the default files.
   
-Requirements:
+## Requirements
    * vpython==7.6.1
    * numpy==1.19.2
    * astropy==4.1
